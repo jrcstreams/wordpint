@@ -322,7 +322,7 @@ function HeroView({
                 ‹
               </button>
               <span className="text-[10px] uppercase tracking-[0.18em] font-bold text-ink-mute tabular-nums">
-                sense {defIndex + 1} of {senseCount}
+                definition {defIndex + 1} of {senseCount}
               </span>
               <button
                 type="button"

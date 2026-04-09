@@ -126,7 +126,7 @@ function SenseNav({
         ‹
       </button>
       <span className="text-[10px] uppercase tracking-[0.18em] font-bold text-ink-mute tabular-nums">
-        sense {index + 1} of {count}
+        definition {index + 1} of {count}
       </span>
       <button
         type="button"
