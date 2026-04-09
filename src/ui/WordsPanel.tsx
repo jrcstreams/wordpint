@@ -147,12 +147,12 @@ function HeroView({
       key={word.word}
       className="hero-in flex-1 min-h-0 flex flex-col"
     >
-      {/* Top zone: word + definition. The definition has a fixed
-          min-height matching its line-clamp-3 max, so the slot the
-          word/def occupies is identical for 1, 2, or 3 line definitions.
-          Combined with the shrink-0 bottom zone below, this means the
-          control bar NEVER moves regardless of definition length. */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-5 flex flex-col">
+      {/* Top zone: word + definition.
+          The definition has a fixed min-height matching its
+          line-clamp-3 max, so the slot the word/def occupies is
+          identical for 1, 2, or 3 line definitions. overflow-hidden
+          guarantees no scroll: the layout is sized to always fit. */}
+      <div className="flex-1 min-h-0 overflow-hidden px-5 flex flex-col">
         <div className="my-auto text-center w-full max-w-xl mx-auto py-2">
           <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.4rem,3.8vw,2.125rem)]">
             {word.word}
@@ -163,13 +163,14 @@ function HeroView({
         </div>
       </div>
 
-      {/* Bottom zone: controls + count. shrink-0, always at the same
-          y position. The "baked-in space" for the controls. */}
-      <div className="shrink-0 px-4 pt-2 pb-2.5 sm:pt-2.5 sm:pb-3 flex flex-col items-center border-t border-ink/15">
-        <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
-
-        {/* Bigger gap above the secondary row, as requested */}
-        <div className="mt-3.5 sm:mt-4 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+      {/* Bottom zone: SINGLE row of controls + count.
+          shrink-0, always at the same y position. Next Word lives
+          inline with the secondary controls so the entire row fits in
+          one band. Next Word stays visually most prominent via the
+          filled (bg-ink text-paper) treatment vs the ghost outlines. */}
+      <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-2.5 sm:pt-3 sm:pb-3 flex flex-col items-center border-t border-ink/15">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+          <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
           <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
           <SortPill value={sort} onChange={setSort} />
           {letterCount > 0 && (
@@ -279,7 +280,7 @@ function PrimaryButton({
     <button
       type="button"
       onClick={onClick}
-      className="text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 border border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-md"
+      className="text-xs font-bold uppercase tracking-[0.12em] px-4 py-2 border border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-md"
       {...rest}
     >
       {children}
