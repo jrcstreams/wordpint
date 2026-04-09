@@ -85,7 +85,7 @@ export function WordsPanel({
   const heroWord = sorted[0] ?? null;
 
   return (
-    <div className="relative flex-1 min-h-0 bg-paper-grain flex flex-col">
+    <div className="relative flex-1 min-h-0 flex flex-col">
       {sorted.length === 0 ? (
         <EmptyState
           letterCount={letterCount}
@@ -273,7 +273,7 @@ function PrimaryButton({
     <button
       type="button"
       onClick={onClick}
-      className="text-sm font-bold uppercase tracking-[0.14em] px-7 sm:px-8 py-2.5 sm:py-3 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-md"
+      className="text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 border border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-md"
       {...rest}
     >
       {children}

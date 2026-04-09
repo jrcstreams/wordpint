@@ -9,21 +9,16 @@ interface HistoryStripProps {
  * "Running tab" content row showing words used this session. Each word
  * is a button that opens the definition modal. The "Running Tab" label
  * itself is rendered by a SectionDivider above this strip.
+ *
+ * App.tsx only renders this when history.length > 0, so we don't need
+ * an empty state here.
  */
 export function HistoryStrip({ history, onWordClick }: HistoryStripProps) {
-  if (history.length === 0) {
-    return (
-      <div className="shrink-0 px-4 sm:px-6 pb-3 text-center bg-paper-grain">
-        <p className="font-body text-sm sm:text-base text-ink-mute">
-          your tab is empty
-        </p>
-      </div>
-    );
-  }
-  const recent = [...history].reverse().slice(0, 30);
+  if (history.length === 0) return null;
+  const recent = [...history].reverse().slice(0, 8);
   return (
-    <div className="shrink-0 px-4 sm:px-6 pb-3 sm:pb-4 bg-paper-grain">
-      <ul className="flex items-center justify-center gap-2 flex-wrap">
+    <div className="shrink-0 pb-3 sm:pb-4 overflow-x-auto">
+      <ul className="flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 whitespace-nowrap">
         {recent.map((w, i) => (
           <Fragment key={`${w}-${i}`}>
             {i > 0 && (

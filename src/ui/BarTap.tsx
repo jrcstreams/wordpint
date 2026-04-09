@@ -51,8 +51,8 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
     [onStop, pouring],
   );
 
-  // viewBox is 220×270; aspect drives the wrapper width.
-  const aspect = 220 / 270;
+  // viewBox is 220×280; aspect drives the wrapper width.
+  const aspect = 220 / 280;
   const svgWidth = tapHeight * aspect;
 
   return (
@@ -74,7 +74,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
         } ${showHint ? 'tap-hint' : ''}`}
       >
         <svg
-          viewBox="0 0 220 270"
+          viewBox="0 0 220 280"
           width="100%"
           height="100%"
           fill="none"
@@ -88,7 +88,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               x="30"
               y="2"
               width="160"
-              height="158"
+              height="168"
               rx="12"
               fill="#1a1a1a"
             />
@@ -98,7 +98,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               x="38"
               y="10"
               width="144"
-              height="142"
+              height="152"
               rx="6"
               fill="#fbf7ec"
               stroke="#1a1a1a"
@@ -110,7 +110,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               x="44"
               y="16"
               width="132"
-              height="130"
+              height="140"
               rx="3"
               fill="none"
               stroke="#1a1a1a"
@@ -120,7 +120,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             {/* HOLD */}
             <text
               x="110"
-              y="50"
+              y="56"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
               fontSize="26"
@@ -134,7 +134,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             {/* TO */}
             <text
               x="110"
-              y="86"
+              y="92"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
               fontSize="26"
@@ -148,7 +148,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             {/* POUR */}
             <text
               x="110"
-              y="122"
+              y="128"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
               fontSize="26"
@@ -160,30 +160,30 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             </text>
 
             {/* Lower neck connecting to body collar */}
-            <rect x="103" y="160" width="14" height="6" fill="#1a1a1a" />
+            <rect x="103" y="170" width="14" height="6" fill="#1a1a1a" />
           </g>
 
           {/* ============ TAP BODY (static) ============ */}
           {/* Mounting collar */}
-          <rect x="86" y="166" width="48" height="12" rx="2" fill="#1a1a1a" />
+          <rect x="86" y="176" width="48" height="12" rx="2" fill="#1a1a1a" />
 
           {/* Chrome cylinder body */}
-          <rect x="92" y="178" width="36" height="56" rx="6" fill="#1a1a1a" />
+          <rect x="92" y="188" width="36" height="56" rx="6" fill="#1a1a1a" />
           <rect
             x="95"
-            y="182"
+            y="192"
             width="5"
             height="48"
             rx="2"
             fill="rgba(255,255,255,0.2)"
           />
-          <rect x="92" y="190" width="36" height="2" fill="#fbf7ec" />
-          <rect x="92" y="220" width="36" height="2" fill="#fbf7ec" />
+          <rect x="92" y="200" width="36" height="2" fill="#fbf7ec" />
+          <rect x="92" y="230" width="36" height="2" fill="#fbf7ec" />
 
           {/* ============ SPOUT ============ */}
-          <path d="M92,234 L88,250 L132,250 L128,234 Z" fill="#1a1a1a" />
-          <rect x="92" y="250" width="36" height="6" rx="1" fill="#1a1a1a" />
-          <ellipse cx="110" cy="258" rx="14" ry="2" fill="#3a3328" />
+          <path d="M92,244 L88,260 L132,260 L128,244 Z" fill="#1a1a1a" />
+          <rect x="92" y="260" width="36" height="6" rx="1" fill="#1a1a1a" />
+          <ellipse cx="110" cy="268" rx="14" ry="2" fill="#3a3328" />
         </svg>
 
         {/* Hint glow ring around the paddle (only before first pour) */}
