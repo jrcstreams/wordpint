@@ -115,14 +115,12 @@ export default function App() {
       <div className="flex-1 min-h-0 flex flex-col bg-paper-grain">
         {/* How it works — between the cup and the words section.
             Hidden on mobile to free up vertical space. */}
-        <div className="hidden sm:block shrink-0 px-4 sm:px-6 pt-2.5 pb-0.5 text-center">
-          <p className="font-body italic text-[12px] sm:text-[13px] text-ink-mute leading-snug max-w-xl mx-auto">
+        <div className="hidden sm:block shrink-0 px-4 sm:px-6 pt-4 pb-3 text-center">
+          <p className="text-[12px] sm:text-[13px] text-ink-mute leading-snug max-w-xl mx-auto">
             Pour letters into the cup — words you can spell will appear below.
             Click{' '}
-            <em className="not-italic font-semibold text-ink-soft">
-              "Next Word"
-            </em>{' '}
-            to use those letters.
+            <span className="font-semibold text-ink-soft">"Next Word"</span> to
+            use those letters.
           </p>
         </div>
         {currentResults.length > 0 && (
