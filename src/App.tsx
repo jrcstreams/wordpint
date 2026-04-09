@@ -73,14 +73,21 @@ export default function App() {
         />
         <DictionaryBanner status={dictionaryStatus} onRetry={loadDictionary} />
 
-        {/* Header in the corner */}
-        <div className="absolute top-3 left-4 sm:top-4 sm:left-6 pointer-events-none max-w-[60%]">
-          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl text-ink leading-none">
+        {/* Masthead in the corner */}
+        <div className="absolute top-3 left-4 sm:top-5 sm:left-6 pointer-events-none">
+          <p className="font-receipt text-[9px] sm:text-[10px] uppercase tracking-[0.42em] text-ink-mute leading-none">
+            est. 2026
+          </p>
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-ink leading-[0.92] mt-1">
             Pint of Words
           </h1>
-          <p className="font-receipt text-[9px] sm:text-[10px] uppercase tracking-[0.18em] text-ink-mute mt-1">
-            pour a pint · learn a word
-          </p>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="h-px w-5 bg-ink/45" />
+            <p className="font-body italic text-[13px] sm:text-sm text-ink-soft leading-none">
+              pour a pint, learn a word
+            </p>
+            <span className="h-px w-5 bg-ink/45" />
+          </div>
         </div>
       </div>
 

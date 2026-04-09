@@ -72,24 +72,9 @@ body {
 }
 
 .tap-pouring .tap-handle {
-  /* Pivot at the collar between the handle and the body */
-  transform-origin: 100px 96px;
+  /* Pivot at the body collar (just below the wooden grip) */
+  transform-origin: 100px 143px;
   animation: tap-tilt 0.22s ease-out forwards;
-}
-
-@keyframes gauge-fill {
-  from {
-    height: 0;
-    y: 176;
-  }
-  to {
-    height: 56;
-    y: 120;
-  }
-}
-
-.tap-pouring .gauge-fill {
-  animation: gauge-fill 0.7s ease-out forwards;
 }
 
 @keyframes stream-flow {

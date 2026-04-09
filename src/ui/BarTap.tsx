@@ -9,18 +9,17 @@ interface BarTapProps {
 }
 
 /**
- * A proper monochrome draft tap: branded paddle handle on top (the "head"),
- * chrome body, side pour gauge, angled spout. Press and hold the entire
- * assembly to pour. The handle pivots forward at the collar like a real
- * beer tap and the gauge fills as you pour.
+ * A monochrome wooden draft tap. The "head" is a vertical grip with a
+ * spherical knob on top, an inset cream panel with an italic-serif "P"
+ * monogram, and decorative collars top and bottom. Below the grip sits
+ * a chrome body and an angled spout. Press and hold to pour; the entire
+ * head pivots forward at the body collar.
  */
 export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [pouring, setPouring] = useState(false);
   const [tapHeight, setTapHeight] = useState(180);
 
-  // Resize-driven tap height — kept in sync with the physics stage's
-  // tap allowance via the shared `computeTapAllowance` formula.
   useEffect(() => {
     const el = wrapperRef.current?.parentElement;
     if (!el) return;
@@ -51,9 +50,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
     [onStop, pouring],
   );
 
-  // Tap is 200 wide × 240 tall in the SVG viewBox; we scale to tapHeight
-  // and let the wrapper auto-width.
-  const aspect = 200 / 240;
+  const aspect = 200 / 260;
   const svgWidth = tapHeight * aspect;
 
   return (
@@ -75,7 +72,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
         } ${showHint ? 'tap-hint' : ''}`}
       >
         <svg
-          viewBox="0 0 200 240"
+          viewBox="0 0 200 260"
           width="100%"
           height="100%"
           fill="none"
@@ -84,194 +81,154 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
         >
           {/* ============ HANDLE GROUP (pivots when pouring) ============ */}
           <g className="tap-handle">
-            {/* Outer paddle */}
-            <rect
-              x="34"
-              y="2"
-              width="132"
-              height="84"
-              rx="8"
-              fill="#1a1a1a"
+            {/* Sphere knob */}
+            <circle cx="100" cy="14" r="13" fill="#1a1a1a" />
+            <ellipse
+              cx="96"
+              cy="9.5"
+              rx="4"
+              ry="2.5"
+              fill="rgba(255,255,255,0.32)"
             />
-            {/* Inner paddle (paper card on the handle) */}
-            <rect
-              x="40"
-              y="8"
-              width="120"
-              height="72"
-              rx="5"
-              fill="#fbf7ec"
-              stroke="#1a1a1a"
-              strokeWidth="1.5"
-            />
-            {/* Top decorative line */}
-            <line
-              x1="46"
-              y1="18"
-              x2="154"
-              y2="18"
-              stroke="#1a1a1a"
-              strokeWidth="0.8"
-            />
-            {/* Bottom decorative line */}
-            <line
-              x1="46"
-              y1="70"
-              x2="154"
-              y2="70"
-              stroke="#1a1a1a"
-              strokeWidth="0.8"
-            />
-            {/* Brand text */}
-            <text
-              x="100"
-              y="42"
-              textAnchor="middle"
-              fontFamily='"Playfair Display", Georgia, serif'
-              fontSize="20"
-              fontWeight="900"
-              fill="#1a1a1a"
-              letterSpacing="0.5"
-            >
-              PINT
-            </text>
-            <text
-              x="100"
-              y="60"
-              textAnchor="middle"
-              fontFamily='"Special Elite", monospace'
-              fontSize="9"
-              letterSpacing="2"
-              fill="#1a1a1a"
-            >
-              POUR
-            </text>
 
-            {/* Joint between handle and body */}
-            <rect x="92" y="86" width="16" height="10" fill="#1a1a1a" />
+            {/* Knob neck */}
+            <rect x="93" y="26" width="14" height="5" fill="#1a1a1a" />
+
+            {/* Top decorative collar */}
+            <rect x="80" y="31" width="40" height="7" rx="1.5" fill="#1a1a1a" />
+            <line
+              x1="83"
+              y1="34.5"
+              x2="117"
+              y2="34.5"
+              stroke="#fbf7ec"
+              strokeWidth="0.6"
+            />
+
+            {/* Wooden vertical grip — outer */}
+            <rect x="74" y="38" width="52" height="92" rx="8" fill="#1a1a1a" />
+
+            {/* Inset cream panel */}
             <rect
               x="80"
-              y="96"
+              y="44"
               width="40"
-              height="8"
-              rx="2"
-              fill="#1a1a1a"
-            />
-          </g>
-
-          {/* ============ TAP BODY (static) ============ */}
-          {/* Cylinder */}
-          <rect
-            x="84"
-            y="104"
-            width="32"
-            height="84"
-            rx="6"
-            fill="#1a1a1a"
-          />
-          {/* Vertical highlight stripe */}
-          <rect
-            x="87"
-            y="108"
-            width="4"
-            height="76"
-            rx="2"
-            fill="rgba(255,255,255,0.18)"
-          />
-          {/* Decorative bands */}
-          <rect x="84" y="118" width="32" height="2" fill="#fbf7ec" />
-          <rect x="84" y="172" width="32" height="2" fill="#fbf7ec" />
-
-          {/* ============ POUR GAUGE (right side) ============ */}
-          <g>
-            <rect
-              x="124"
-              y="120"
-              width="9"
-              height="58"
+              height="80"
+              rx="4"
               fill="#fbf7ec"
               stroke="#1a1a1a"
               strokeWidth="1.4"
             />
-            {/* Tick marks */}
+
+            {/* Top horizontal rule on panel */}
             <line
-              x1="124"
-              y1="135"
-              x2="133"
-              y2="135"
+              x1="84"
+              y1="52"
+              x2="116"
+              y2="52"
               stroke="#1a1a1a"
               strokeWidth="0.7"
             />
+            {/* Bottom horizontal rule on panel */}
             <line
-              x1="124"
-              y1="149"
-              x2="133"
-              y2="149"
+              x1="84"
+              y1="116"
+              x2="116"
+              y2="116"
               stroke="#1a1a1a"
               strokeWidth="0.7"
             />
-            <line
-              x1="124"
-              y1="163"
-              x2="133"
-              y2="163"
-              stroke="#1a1a1a"
-              strokeWidth="0.7"
-            />
-            {/* Fill bar (animated via CSS when pouring) */}
+
+            {/* Italic serif monogram */}
+            <text
+              x="100"
+              y="93"
+              textAnchor="middle"
+              fontFamily='"Playfair Display", Georgia, serif'
+              fontSize="44"
+              fontWeight="900"
+              fontStyle="italic"
+              fill="#1a1a1a"
+            >
+              P
+            </text>
+
+            {/* Bottom decorative collar */}
             <rect
-              className="gauge-fill"
-              x="125.4"
-              y="176"
-              width="6.2"
-              height="0"
-              fill="#e8a838"
+              x="80"
+              y="130"
+              width="40"
+              height="7"
+              rx="1.5"
+              fill="#1a1a1a"
             />
+            <line
+              x1="83"
+              y1="133.5"
+              x2="117"
+              y2="133.5"
+              stroke="#fbf7ec"
+              strokeWidth="0.6"
+            />
+
+            {/* Lower neck connecting to body collar */}
+            <rect x="93" y="137" width="14" height="6" fill="#1a1a1a" />
           </g>
 
-          {/* ============ SPOUT ============ */}
-          <path d="M84,188 L80,210 L120,210 L116,188 Z" fill="#1a1a1a" />
+          {/* ============ TAP BODY (static) ============ */}
+          {/* Mounting collar between handle and body */}
+          <rect x="78" y="143" width="44" height="11" rx="2" fill="#1a1a1a" />
+
+          {/* Chrome cylinder body */}
+          <rect x="84" y="154" width="32" height="62" rx="6" fill="#1a1a1a" />
+          {/* Vertical highlight stripe */}
           <rect
-            x="84"
-            y="210"
-            width="32"
-            height="6"
-            rx="1"
-            fill="#1a1a1a"
+            x="87"
+            y="158"
+            width="4"
+            height="54"
+            rx="2"
+            fill="rgba(255,255,255,0.2)"
           />
-          {/* Spout opening */}
-          <ellipse cx="100" cy="218" rx="13" ry="2" fill="#3a3328" />
+          {/* Decorative horizontal bands */}
+          <rect x="84" y="166" width="32" height="2" fill="#fbf7ec" />
+          <rect x="84" y="202" width="32" height="2" fill="#fbf7ec" />
+
+          {/* ============ SPOUT ============ */}
+          <path d="M84,216 L80,232 L120,232 L116,216 Z" fill="#1a1a1a" />
+          <rect x="84" y="232" width="32" height="6" rx="1" fill="#1a1a1a" />
+          <ellipse cx="100" cy="240" rx="13" ry="2" fill="#3a3328" />
 
           {/* Idle drip */}
           {!pouring && (
             <circle
               className="tap-drip"
               cx="100"
-              cy="220"
+              cy="242"
               r="2"
               fill="#e8a838"
               opacity="0.55"
             />
           )}
 
-          {/* Pour stream (visible while pouring) */}
+          {/* Pour stream */}
           <rect
             className="tap-stream"
             x="96"
-            y="222"
+            y="244"
             width="8"
-            height="38"
+            height="42"
             rx="3"
             fill="#e8a838"
             opacity="0"
           />
         </svg>
 
-        {/* Hint glow ring (positioned over the handle, not the cup) */}
+        {/* Hint glow ring around the handle (only before first pour) */}
         {showHint && (
           <span
             aria-hidden="true"
-            className="hint-glow absolute left-1/2 top-[18%] -translate-x-1/2 -translate-y-1/2 w-[90%] h-[55%] rounded-full pointer-events-none"
+            className="hint-glow absolute left-1/2 top-[31%] -translate-x-1/2 -translate-y-1/2 w-[60%] h-[55%] rounded-full pointer-events-none"
           />
         )}
       </button>
