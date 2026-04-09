@@ -319,7 +319,7 @@ function PrimaryButton({
     <button
       type="button"
       onClick={onClick}
-      className="text-xs font-bold uppercase tracking-[0.12em] px-4 py-2 border border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-md"
+      className="text-xs font-bold uppercase tracking-[0.12em] px-4 py-2 border border-ink bg-ink text-paper hover:bg-ink-soft hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[0.5px] hover:-translate-y-[0.5px] transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-paper-grain focus-visible:ring-ink"
       {...rest}
     >
       {children}
