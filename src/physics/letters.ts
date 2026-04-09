@@ -7,13 +7,6 @@ const SCRABBLE_DISTRIBUTION: Record<string, number> = {
   s: 4, t: 6, u: 4, v: 2, w: 2, x: 1, y: 2, z: 1,
 };
 
-// Standard Scrabble point values for the small corner numeral.
-const SCRABBLE_POINTS: Record<string, number> = {
-  a: 1, b: 3, c: 3, d: 2, e: 1, f: 4, g: 2, h: 4, i: 1,
-  j: 8, k: 5, l: 1, m: 3, n: 1, o: 1, p: 3, q: 10, r: 1,
-  s: 1, t: 1, u: 1, v: 4, w: 4, x: 8, y: 4, z: 10,
-};
-
 export class ScrabbleBag {
   private bag: string[] = [];
   private rng: () => number;
@@ -34,11 +27,16 @@ export class ScrabbleBag {
   }
 }
 
-const TILE_SIZE = 42;
+const TILE_SIZE = 48;
 // Render at 2x for crisp glyphs on retina, then downscale via sprite scale.
 const TEX_SCALE = 2;
 const textureCache = new Map<string, string>();
 
+/**
+ * Premium ivory tile with embossed serif glyph and faint horizontal
+ * wood-grain. No point value (intentionally removed). Designed to read
+ * as a vintage typesetting block on the paper-themed bar.
+ */
 function makeLetterTexture(char: string): string {
   const cached = textureCache.get(char);
   if (cached) return cached;
@@ -50,60 +48,87 @@ function makeLetterTexture(char: string): string {
   const ctx = c.getContext('2d')!;
   ctx.scale(TEX_SCALE, TEX_SCALE);
 
-  const r = 6; // corner radius
-  const inset = 1;
+  const r = 7;
+  const inset = 1.5;
+  const w = TILE_SIZE - inset * 2;
+  const h = TILE_SIZE - inset * 2;
 
-  // Drop shadow (subtle, baked into the sprite)
+  // Outer drop shadow (baked, subtle so the world reads quietly)
   ctx.save();
-  ctx.shadowColor = 'rgba(26, 16, 8, 0.35)';
-  ctx.shadowBlur = 4;
+  ctx.shadowColor = 'rgba(20, 12, 4, 0.32)';
+  ctx.shadowBlur = 5;
   ctx.shadowOffsetY = 2;
 
-  // Tile body — amber radial gradient (this is the "colored liquid" pop)
-  const grad = ctx.createRadialGradient(
-    TILE_SIZE / 2,
-    TILE_SIZE / 2 - 4,
-    2,
-    TILE_SIZE / 2,
-    TILE_SIZE / 2,
-    TILE_SIZE * 0.7,
-  );
-  grad.addColorStop(0, '#fad97c');
-  grad.addColorStop(0.55, '#e8a838');
-  grad.addColorStop(1, '#b87a1e');
-  ctx.fillStyle = grad;
-  roundedRect(ctx, inset, inset, TILE_SIZE - inset * 2, TILE_SIZE - inset * 2, r);
+  // Tile body — warm ivory with vertical light gradient
+  const body = ctx.createLinearGradient(0, inset, 0, inset + h);
+  body.addColorStop(0, '#fbf3dd');
+  body.addColorStop(0.5, '#f1e3b9');
+  body.addColorStop(1, '#dcc78a');
+  ctx.fillStyle = body;
+  roundedRect(ctx, inset, inset, w, h, r);
   ctx.fill();
   ctx.restore();
 
-  // Border
-  ctx.lineWidth = 1.5;
-  ctx.strokeStyle = '#5a3818';
-  roundedRect(ctx, inset, inset, TILE_SIZE - inset * 2, TILE_SIZE - inset * 2, r);
+  // Subtle horizontal wood-grain lines (clipped to the rounded rect)
+  ctx.save();
+  roundedRect(ctx, inset, inset, w, h, r);
+  ctx.clip();
+  ctx.strokeStyle = 'rgba(90, 56, 24, 0.09)';
+  ctx.lineWidth = 0.6;
+  for (let y = inset + 4; y < inset + h - 2; y += 3) {
+    ctx.beginPath();
+    ctx.moveTo(inset + 1, y + Math.sin(y * 0.7) * 0.3);
+    ctx.lineTo(inset + w - 1, y + Math.cos(y * 0.6) * 0.3);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Inner bevel — top/left highlight, bottom/right shadow
+  ctx.save();
+  roundedRect(ctx, inset, inset, w, h, r);
+  ctx.clip();
+
+  // Top highlight
+  const topGrad = ctx.createLinearGradient(0, inset, 0, inset + 6);
+  topGrad.addColorStop(0, 'rgba(255, 250, 230, 0.85)');
+  topGrad.addColorStop(1, 'rgba(255, 250, 230, 0)');
+  ctx.fillStyle = topGrad;
+  ctx.fillRect(inset, inset, w, 6);
+
+  // Bottom shadow
+  const botGrad = ctx.createLinearGradient(0, inset + h - 8, 0, inset + h);
+  botGrad.addColorStop(0, 'rgba(60, 36, 12, 0)');
+  botGrad.addColorStop(1, 'rgba(60, 36, 12, 0.32)');
+  ctx.fillStyle = botGrad;
+  ctx.fillRect(inset, inset + h - 8, w, 8);
+  ctx.restore();
+
+  // Crisp ink border
+  ctx.lineWidth = 1.6;
+  ctx.strokeStyle = '#1a1a1a';
+  roundedRect(ctx, inset, inset, w, h, r);
   ctx.stroke();
 
-  // Inner highlight line (top)
-  ctx.strokeStyle = 'rgba(255, 240, 200, 0.55)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(inset + 4, inset + 3);
-  ctx.lineTo(TILE_SIZE - inset - 4, inset + 3);
+  // Inner thin frame line for printing-block feel
+  ctx.lineWidth = 0.7;
+  ctx.strokeStyle = 'rgba(26, 26, 26, 0.35)';
+  roundedRect(ctx, inset + 2.5, inset + 2.5, w - 5, h - 5, r - 2);
   ctx.stroke();
 
-  // Glyph — bold serif, dark ink
-  ctx.fillStyle = '#2a1810';
-  ctx.font = '800 24px "Playfair Display", Georgia, serif';
+  // Embossed glyph: shadow underneath, then ink letter
+  ctx.font = '900 30px "Playfair Display", Georgia, serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(char.toUpperCase(), TILE_SIZE / 2, TILE_SIZE / 2 + 1);
 
-  // Point value in bottom-right
-  const points = SCRABBLE_POINTS[char] ?? 1;
-  ctx.font = '600 9px "EB Garamond", Georgia, serif';
-  ctx.textAlign = 'right';
-  ctx.textBaseline = 'alphabetic';
-  ctx.fillStyle = '#3a2410';
-  ctx.fillText(String(points), TILE_SIZE - 5, TILE_SIZE - 4);
+  const cx = TILE_SIZE / 2;
+  const cy = TILE_SIZE / 2 + 2;
+
+  // Light highlight (offset up-left)
+  ctx.fillStyle = 'rgba(255, 250, 230, 0.6)';
+  ctx.fillText(char.toUpperCase(), cx - 0.6, cy - 0.6);
+  // Ink glyph
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillText(char.toUpperCase(), cx, cy);
 
   const url = c.toDataURL();
   textureCache.set(char, url);
@@ -145,11 +170,11 @@ export function createLetterBody(
   y: number,
 ): LetterBody {
   const body = Matter.Bodies.rectangle(x, y, TILE_SIZE, TILE_SIZE, {
-    density: 0.0022,
-    friction: 0.55,
-    frictionStatic: 0.6,
-    restitution: 0.08,
-    chamfer: { radius: 5 },
+    density: 0.0024,
+    friction: 0.6,
+    frictionStatic: 0.65,
+    restitution: 0.06,
+    chamfer: { radius: 6 },
     render: {
       sprite: {
         texture: makeLetterTexture(char),

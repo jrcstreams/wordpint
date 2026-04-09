@@ -14,6 +14,7 @@ interface AppState {
   letterEnteredGlass: (id: number, char: string) => void;
   letterLeftGlass: (id: number) => void;
   useWord: (word: string) => number[];
+  clearGlass: () => void;
   setCurrentWord: (word: WordResult | null) => void;
   setDictionary: (index: WordIndex) => void;
   setDictionaryStatus: (status: DictionaryStatus) => void;
@@ -67,6 +68,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
     return removed;
   },
+
+  clearGlass: () =>
+    set({
+      lettersInGlass: new Map(),
+      currentWord: null,
+    }),
 
   setCurrentWord: (word) => set({ currentWord: word }),
   setDictionary: (index) => set({ wordIndex: index, dictionaryStatus: 'ready' }),

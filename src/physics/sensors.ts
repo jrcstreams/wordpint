@@ -123,6 +123,20 @@ export class Sensors {
     }
   }
 
+  /** Remove every active letter body, regardless of where it is. */
+  clearAll() {
+    const world = this.opts.engine.world;
+    for (const body of Matter.Composite.allBodies(world)) {
+      if (!this.isLetter(body)) continue;
+      const track = this.tracking.get(body.letterId);
+      if (track?.insideGlass) {
+        this.opts.events.onLeft(body.letterId);
+      }
+      Matter.Composite.remove(world, body);
+      this.tracking.delete(body.letterId);
+    }
+  }
+
   /** True when the cap has been reached and the dispenser should stall. */
   isFull(): boolean {
     return this.tracking.size >= this.opts.maxActive;
