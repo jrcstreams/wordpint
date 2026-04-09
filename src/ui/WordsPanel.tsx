@@ -100,7 +100,6 @@ export function WordsPanel({
           sort={sort}
           setSort={setSort}
           letterCount={letterCount}
-          totalCount={sorted.length}
           onPick={onPick}
           onShowSingle={() => setShowAll(false)}
           onEmptyCup={onEmptyCup}
@@ -108,7 +107,6 @@ export function WordsPanel({
       ) : (
         <HeroView
           word={heroWord!}
-          totalCount={sorted.length}
           sort={sort}
           setSort={setSort}
           letterCount={letterCount}
@@ -125,7 +123,6 @@ export function WordsPanel({
 
 function HeroView({
   word,
-  totalCount,
   sort,
   setSort,
   letterCount,
@@ -134,7 +131,6 @@ function HeroView({
   onEmptyCup,
 }: {
   word: WordResult;
-  totalCount: number;
   sort: SortMode;
   setSort: (m: SortMode) => void;
   letterCount: number;
@@ -157,18 +153,20 @@ function HeroView({
           <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.4rem,3.8vw,2.125rem)]">
             {word.word}
           </h3>
-          <p className="mt-2 max-w-md mx-auto font-body text-sm sm:text-base leading-snug text-ink-soft line-clamp-3 min-h-[58px] sm:min-h-[66px]">
+          <p className="mt-2 max-w-md mx-auto font-body text-sm sm:text-base leading-snug text-ink-soft line-clamp-2 sm:line-clamp-3 min-h-[40px] sm:min-h-[66px]">
             {word.definition || 'no definition on file'}
           </p>
         </div>
       </div>
 
-      {/* Bottom zone: SINGLE row of controls + count.
+      {/* Bottom zone: SINGLE row of controls.
           shrink-0, always at the same y position. Next Word lives
           inline with the secondary controls so the entire row fits in
           one band. Next Word stays visually most prominent via the
-          filled (bg-ink text-paper) treatment vs the ghost outlines. */}
-      <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-2.5 sm:pt-3 sm:pb-3 flex flex-col items-center border-t border-ink/15">
+          filled (bg-ink text-paper) treatment vs the ghost outlines.
+          The total count moved into the SectionDivider above so it's
+          visible without taking hero space. */}
+      <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-3 sm:pt-3 sm:pb-3.5 flex flex-col items-center border-t border-ink/15">
         <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
           <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
           <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
@@ -179,11 +177,6 @@ function HeroView({
             </GhostButton>
           )}
         </div>
-
-        <p className="mt-2 sm:mt-2.5 text-xs sm:text-sm text-ink-soft">
-          <span className="font-display font-black text-ink">{totalCount}</span>{' '}
-          word{totalCount === 1 ? '' : 's'} on offer
-        </p>
       </div>
     </div>
   );
@@ -199,7 +192,6 @@ function GridView({
   sort,
   setSort,
   letterCount,
-  totalCount,
   onPick,
   onShowSingle,
   onEmptyCup,
@@ -211,7 +203,6 @@ function GridView({
   sort: SortMode;
   setSort: (m: SortMode) => void;
   letterCount: number;
-  totalCount: number;
   onPick: (word: string) => void;
   onShowSingle: () => void;
   onEmptyCup: () => void;
@@ -239,28 +230,18 @@ function GridView({
         ))}
       </ul>
 
-      {/* Control row + count — pinned below the grid */}
-      <div className="mt-3 shrink-0 flex flex-col items-center gap-2">
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
-          <GhostButton onClick={onShowSingle}>Single Word</GhostButton>
-          <SortPill value={sort} onChange={setSort} />
-          {letterCount > 0 && (
-            <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
-              Empty Cup
-            </GhostButton>
-          )}
-          {pageCount > 1 && (
-            <PageNav
-              page={page}
-              pageCount={pageCount}
-              setPage={setPage}
-            />
-          )}
-        </div>
-        <p className="text-sm sm:text-base text-ink-soft">
-          <span className="font-display font-black text-ink">{totalCount}</span>{' '}
-          word{totalCount === 1 ? '' : 's'} on offer
-        </p>
+      {/* Control row — pinned below the grid */}
+      <div className="mt-3 shrink-0 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+        <GhostButton onClick={onShowSingle}>Single Word</GhostButton>
+        <SortPill value={sort} onChange={setSort} />
+        {letterCount > 0 && (
+          <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+            Empty Cup
+          </GhostButton>
+        )}
+        {pageCount > 1 && (
+          <PageNav page={page} pageCount={pageCount} setPage={setPage} />
+        )}
       </div>
     </div>
   );
