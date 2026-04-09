@@ -85,7 +85,7 @@ export function WordsPanel({
   const heroWord = sorted[0] ?? null;
 
   return (
-    <div className="relative flex-1 min-h-0 flex flex-col overflow-y-auto">
+    <div className="relative flex-1 min-h-0 flex flex-col">
       {sorted.length === 0 ? (
         <EmptyState
           letterCount={letterCount}
@@ -145,40 +145,45 @@ function HeroView({
   return (
     <div
       key={word.word}
-      className="hero-in my-auto flex flex-col items-center text-center px-5 py-2 max-w-xl mx-auto w-full"
+      className="hero-in flex-1 min-h-0 flex flex-col"
     >
-      {/* Featured word — compact */}
-      <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.5rem,4vw,2.25rem)]">
-        {word.word}
-      </h3>
+      {/* Top zone: word + definition.
+          Scrolls inside its own bounds for very long definitions, so the
+          control bar below NEVER moves regardless of definition length. */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-5 flex flex-col">
+        <div className="my-auto text-center w-full max-w-xl mx-auto py-2">
+          <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.5rem,4vw,2.25rem)]">
+            {word.word}
+          </h3>
+          <p className="mt-2.5 max-w-md mx-auto font-body text-sm sm:text-base leading-snug text-ink-soft line-clamp-3">
+            {word.definition || 'no definition on file'}
+          </p>
+        </div>
+      </div>
 
-      {/* Definition — Garamond regular, line-clamped so the layout
-          stays predictable even on long definitions. */}
-      <p className="mt-2 max-w-md font-body text-sm sm:text-base leading-snug text-ink-soft line-clamp-3">
-        {word.definition || 'no definition on file'}
-      </p>
-
-      {/* Primary CTA on its own row */}
-      <div className="mt-3 sm:mt-4">
+      {/* Bottom zone: controls + count.
+          shrink-0 + border-t. ALWAYS at the same y position regardless
+          of how long the definition is — the user's "baked-in space"
+          for the controls. */}
+      <div className="shrink-0 px-4 pt-3 pb-3 sm:pt-4 sm:pb-4 flex flex-col items-center border-t border-ink/15">
         <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
-      </div>
 
-      {/* Secondary controls */}
-      <div className="mt-2 sm:mt-2.5 flex items-center justify-center gap-1.5 flex-wrap">
-        <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
-        <SortPill value={sort} onChange={setSort} />
-        {letterCount > 0 && (
-          <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
-            Empty Cup
-          </GhostButton>
-        )}
-      </div>
+        {/* Bigger gap above the secondary row, as requested */}
+        <div className="mt-4 sm:mt-5 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+          <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
+          <SortPill value={sort} onChange={setSort} />
+          {letterCount > 0 && (
+            <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+              Empty Cup
+            </GhostButton>
+          )}
+        </div>
 
-      {/* Total count */}
-      <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-ink-soft">
-        <span className="font-display font-black text-ink">{totalCount}</span>{' '}
-        word{totalCount === 1 ? '' : 's'} on offer
-      </p>
+        <p className="mt-3 sm:mt-3.5 text-xs sm:text-sm text-ink-soft">
+          <span className="font-display font-black text-ink">{totalCount}</span>{' '}
+          word{totalCount === 1 ? '' : 's'} on offer
+        </p>
+      </div>
     </div>
   );
 }

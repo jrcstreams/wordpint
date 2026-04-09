@@ -113,8 +113,9 @@ export default function App() {
 
       {/* ============ WORDS + TAB (seamless flow) ============ */}
       <div className="flex-1 min-h-0 flex flex-col bg-paper-grain">
-        {/* How it works — between the cup and the words section */}
-        <div className="shrink-0 px-4 sm:px-6 pt-2.5 pb-0.5 text-center">
+        {/* How it works — between the cup and the words section.
+            Hidden on mobile to free up vertical space. */}
+        <div className="hidden sm:block shrink-0 px-4 sm:px-6 pt-2.5 pb-0.5 text-center">
           <p className="font-body italic text-[12px] sm:text-[13px] text-ink-mute leading-snug max-w-xl mx-auto">
             Pour letters into the cup — words you can spell will appear below.
             Click{' '}
