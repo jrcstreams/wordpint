@@ -10,7 +10,13 @@ import { createWorld, type WorldHandle } from './world';
 import { createPintGlass } from './pintGlass';
 import { Dispenser } from './dispenser';
 import { Sensors } from './sensors';
-import { computeTapAllowance, TAP_SPOUT_RATIO } from './sizing';
+import {
+  computeTapAllowance,
+  TAP_SPOUT_RATIO,
+  TAP_TOP_OFFSET,
+  TAP_TO_CUP_GAP,
+} from './sizing';
+import { LETTER_TILE_SIZE } from './letters';
 
 export interface PhysicsStageHandle {
   startPour: () => void;
@@ -21,7 +27,7 @@ export interface PhysicsStageHandle {
   getSpoutScreenPosition: () => { x: number; y: number } | null;
 }
 
-const MAX_ACTIVE_LETTERS = 150;
+const MAX_ACTIVE_LETTERS = 180;
 
 export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,14 +40,11 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
   const letterEnteredGlass = useAppStore((s) => s.letterEnteredGlass);
   const letterLeftGlass = useAppStore((s) => s.letterLeftGlass);
 
-  // Build / rebuild the world. Called on mount and whenever the container
-  // resizes (window resize, orientation change, layout reflow).
   useEffect(() => {
     const canvas = canvasRef.current!;
     const container = containerRef.current!;
 
     const build = () => {
-      // Tear down any prior world before rebuilding.
       dispenserRef.current?.destroy();
       sensorsRef.current?.destroy();
       worldRef.current?.destroy();
@@ -57,9 +60,17 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
       worldRef.current = world;
 
       const tapAllowance = computeTapAllowance(world.height);
+      const cupBottomMargin = 16;
       const glassCenterX = world.width / 2;
-      const glassBaseY = world.height - 16;
-      const glassH = Math.max(140, world.height - tapAllowance - 28);
+      const glassBaseY = world.height - cupBottomMargin;
+      const glassH = Math.max(
+        130,
+        world.height -
+          TAP_TOP_OFFSET -
+          tapAllowance -
+          TAP_TO_CUP_GAP -
+          cupBottomMargin,
+      );
       const glass = createPintGlass(
         world.world,
         glassCenterX,
@@ -67,19 +78,14 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
         glassH,
       );
 
-      // The sensor uses a tighter AABB than the visual glass interior so
-      // letters that are bouncing OUT over the rim get uncounted *before*
-      // they visually leave (instead of waiting for the floor-fade).
-      const sensorInterior = {
-        x: glass.interior.x + 6,
-        y: glass.interior.y + 14,
-        width: glass.interior.width - 12,
-        height: glass.interior.height - 18,
-      };
-
+      // Sensor uses the visible glass interior as the strict region. Stacked
+      // overflow letters above the rim still count as long as they've been
+      // inside before — handled via stackHeadroom in the Sensors class.
       const sensors = new Sensors({
         engine: world.engine,
-        interior: sensorInterior,
+        interior: glass.interior,
+        stackHeadroom: LETTER_TILE_SIZE * 4,
+        sideSlack: 4,
         worldHeight: world.height,
         maxActive: MAX_ACTIVE_LETTERS,
         events: {
@@ -89,8 +95,9 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
       });
       sensorsRef.current = sensors;
 
+      // Spawn just below the spout opening.
       const spawnX = glassCenterX;
-      const spawnY = tapAllowance * TAP_SPOUT_RATIO + 6;
+      const spawnY = TAP_TOP_OFFSET + tapAllowance * TAP_SPOUT_RATIO + 4;
       spoutRef.current = { x: spawnX, y: spawnY - 10 };
 
       const dispenser = new Dispenser({
@@ -98,7 +105,7 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
         spawnX,
         spawnY,
         intervalMs: 90,
-        jitterX: 16,
+        jitterX: 14,
         onSpawn: () => {
           if (sensors.isFull()) dispenser.stop();
         },
@@ -108,15 +115,11 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
 
     build();
 
-    // Debounced resize / orientation change rebuild.
     let raf = 0;
     const onResize = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        build();
-      });
+      raf = requestAnimationFrame(() => build());
     };
-
     const ro = new ResizeObserver(onResize);
     ro.observe(container);
     window.addEventListener('orientationchange', onResize);
@@ -143,9 +146,6 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
     [],
   );
 
-  // The container holds the canvas; we measure the container so resize
-  // observers see the correct size even when the canvas is absolutely
-  // positioned within it.
   return (
     <div ref={containerRef} className="absolute inset-0">
       <canvas
@@ -159,5 +159,4 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
 
 PhysicsStage.displayName = 'PhysicsStage';
 
-// Re-export Matter so consumers can dispose if needed (currently unused).
 export { Matter };

@@ -70,14 +70,11 @@ export default function App() {
   return (
     <div className="flex flex-col h-full bg-paper text-ink">
       {/* ============ TOP NAV ============ */}
-      <header className="shrink-0 border-b-2 border-ink bg-paper px-4 sm:px-6 pt-3 pb-5 sm:pt-4 sm:pb-6 flex items-center justify-between gap-3 sm:gap-4">
-        <div className="flex items-baseline gap-2.5 sm:gap-3.5 min-w-0">
-          <h1 className="text-xl sm:text-2xl md:text-[1.75rem] font-black tracking-tight text-ink leading-none whitespace-nowrap">
+      <header className="shrink-0 border-b-2 border-ink bg-paper px-4 sm:px-6 py-3 sm:py-3.5 flex items-end justify-between gap-3 sm:gap-4">
+        <div className="flex items-baseline gap-3 sm:gap-4 min-w-0">
+          <h1 className="text-xl sm:text-2xl md:text-[1.6rem] font-black tracking-tight text-ink leading-none whitespace-nowrap">
             Pint of Words
           </h1>
-          <span aria-hidden="true" className="hidden sm:inline text-ink/30">
-            ·
-          </span>
           <p className="hidden sm:block text-xs sm:text-[13px] text-ink-mute leading-none whitespace-nowrap">
             pour a pint, learn a word
           </p>
@@ -103,7 +100,7 @@ export default function App() {
       </header>
 
       {/* ============ POUR STAGE ============ */}
-      <div className="relative basis-[40%] sm:basis-[42%] grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink">
+      <div className="relative basis-[52%] sm:basis-[56%] grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink">
         <PhysicsStage ref={stageRef} />
         <BarTap
           onStart={() => stageRef.current?.startPour()}

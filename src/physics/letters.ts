@@ -27,7 +27,7 @@ export class ScrabbleBag {
   }
 }
 
-const TILE_SIZE = 30;
+const TILE_SIZE = 26;
 // Render at 2x for crisp glyphs on retina, then downscale via sprite scale.
 const TEX_SCALE = 2;
 const textureCache = new Map<string, string>();

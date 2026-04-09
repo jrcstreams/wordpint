@@ -71,8 +71,8 @@ body {
 }
 
 .tap-pouring .tap-handle {
-  /* Pivot at the new body collar position */
-  transform-origin: 110px 166px;
+  /* Pivot at the body collar (just below the paddle) */
+  transform-origin: 110px 178px;
   animation: tap-tilt 0.22s ease-out forwards;
 }
 

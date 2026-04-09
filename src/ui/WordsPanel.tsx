@@ -252,15 +252,15 @@ function HeroView({
   return (
     <div
       key={word.word}
-      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-5 py-3 sm:py-4 max-w-xl mx-auto w-full"
+      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-5 py-2 sm:py-3 max-w-xl mx-auto w-full"
     >
       {/* Featured word */}
       <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.75rem,4.5vw,2.75rem)]">
         {word.word}
       </h3>
 
-      {/* Definition — Garamond regular, no italic */}
-      <p className="mt-2 sm:mt-3 max-w-md font-body text-sm sm:text-[15px] leading-snug text-ink-soft">
+      {/* Definition — Garamond regular, bigger and readable */}
+      <p className="mt-2 max-w-md font-body text-base sm:text-lg leading-snug text-ink-soft">
         {word.definition || 'no definition on file'}
       </p>
 
@@ -268,13 +268,13 @@ function HeroView({
       <button
         type="button"
         onClick={onNext}
-        className="mt-4 sm:mt-5 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-sm"
+        className="mt-3 sm:mt-4 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-sm"
       >
         Next word →
       </button>
 
       {/* Footer line */}
-      <p className="mt-3 text-[11px] text-ink-mute">
+      <p className="mt-2.5 text-[11px] text-ink-mute">
         {totalCount > 1 ? (
           <>
             {totalCount - 1} more available ·{' '}
@@ -380,22 +380,22 @@ function EmptyState({
   }
   if (letterCount === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-2 text-center px-4">
+      <div className="flex-1 flex flex-col items-center justify-center gap-4 sm:gap-5 text-center px-4">
         <p className="font-display text-2xl sm:text-3xl font-black text-ink leading-none">
           Pour yourself a pint.
         </p>
-        <p className="text-sm text-ink-mute pulse-up">
+        <p className="text-sm sm:text-base text-ink-mute pulse-up">
           ↑ pull the tap above
         </p>
       </div>
     );
   }
   return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-2 text-center px-4">
+    <div className="flex-1 flex flex-col items-center justify-center gap-4 sm:gap-5 text-center px-4">
       <p className="font-display text-xl sm:text-2xl font-black text-ink leading-none">
         No words yet.
       </p>
-      <p className="text-sm text-ink-mute pulse-up">
+      <p className="text-sm sm:text-base text-ink-mute pulse-up">
         ↑ pour a few more letters
       </p>
     </div>
