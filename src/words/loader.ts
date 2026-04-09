@@ -1,6 +1,8 @@
 import type { WordIndex } from './types';
 
-export async function loadWordIndex(url = '/wordnet.json'): Promise<WordIndex> {
+const DEFAULT_URL = `${import.meta.env.BASE_URL}wordnet.json`;
+
+export async function loadWordIndex(url = DEFAULT_URL): Promise<WordIndex> {
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Failed to load dictionary: ${res.status}`);
