@@ -2,12 +2,12 @@
 
 **Pour a Pint, Learn a Word.**
 
-A static web app where you pour Scrabble letter tiles from a draft tap into a
+A static web app where you pour letter tiles from a draft tap into a
 pint glass with realistic 2D physics, and the app surfaces words you can spell
 from the letters currently in the cup, complete with definitions from
 [Princeton WordNet](https://wordnet.princeton.edu/).
 
-![tap → cup → words](docs/superpowers/specs/2026-04-08-pint-of-words-design.md)
+![WordPint share image — a tap pouring lettered tiles into a pint glass next to the WordPint wordmark](public/share.png)
 
 ## What it does
 
@@ -57,7 +57,7 @@ npm run build
 Three loosely-coupled subsystems:
 
 - **`src/physics/`** — Matter.js engine, pint glass body, letter tile factory
-  with a Scrabble-distribution bag, dispenser timing, in-cup sensors, and a
+  with a weighted letter bag, dispenser timing, in-cup sensors, and a
   React `PhysicsStage` wrapper. Knows nothing about words.
 - **`src/words/`** — pure TS word engine: WordNet loader, anagram subset
   search via a sorted-letter signature index, length/rarity scoring,
