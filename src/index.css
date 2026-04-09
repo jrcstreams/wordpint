@@ -9,7 +9,8 @@ body,
   margin: 0;
 }
 
-html, body {
+html,
+body {
   overflow: hidden;
 }
 
@@ -21,7 +22,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Subtle paper grain via radial speckle */
+/* ----- Surface textures ------------------------------------------------- */
+
 .bg-paper-grain {
   background-color: #f7f3ea;
   background-image:
@@ -31,7 +33,6 @@ body {
   background-position: 0 0, 16px 23px;
 }
 
-/* Bar wood texture (monochrome — vertical plank lines) */
 .bg-bar-wood {
   background-color: #f1ead5;
   background-image:
@@ -46,7 +47,6 @@ body {
   background-size: auto, 28px 28px;
 }
 
-/* Receipt paper edges */
 .receipt {
   background: #fbf7ec;
   background-image: linear-gradient(
@@ -60,40 +60,87 @@ body {
   border-top: 2px dashed #1a1a1a;
 }
 
-/* ----- BarTap animations ------------------------------------------------ */
+/* ----- BarTap (draft tap) animations ----------------------------------- */
 
 @keyframes tap-tilt {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-14deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-16deg);
+  }
 }
+
 .tap-pouring .tap-handle {
-  transform-origin: 90px 80px;
-  animation: tap-tilt 0.18s ease-out forwards;
+  /* Pivot at the collar between the handle and the body */
+  transform-origin: 100px 96px;
+  animation: tap-tilt 0.22s ease-out forwards;
+}
+
+@keyframes gauge-fill {
+  from {
+    height: 0;
+    y: 176;
+  }
+  to {
+    height: 56;
+    y: 120;
+  }
+}
+
+.tap-pouring .gauge-fill {
+  animation: gauge-fill 0.7s ease-out forwards;
 }
 
 @keyframes stream-flow {
-  0% { transform: scaleY(0.3); opacity: 0; }
-  100% { transform: scaleY(1); opacity: 0.7; }
+  0% {
+    transform: scaleY(0.3);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0.75;
+  }
 }
+
 .tap-pouring .tap-stream {
   transform-origin: top center;
   animation: stream-flow 0.18s ease-out forwards;
 }
 
-/* Glow ring around the tap before the first pour */
-@keyframes hint-pulse {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.55;
+@keyframes drip-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0);
   }
   50% {
-    transform: translate(-50%, -50%) scale(1.18);
+    opacity: 0.85;
+    transform: translateY(0.5px);
+  }
+}
+
+.tap-drip {
+  transform-origin: center;
+  animation: drip-pulse 2.4s ease-in-out infinite;
+}
+
+/* Hint glow around the handle (only before first pour) */
+@keyframes hint-pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.16);
     opacity: 0;
   }
 }
+
 .hint-glow {
   background: radial-gradient(
-    circle,
+    ellipse,
     rgba(232, 168, 56, 0.55) 0%,
     rgba(232, 168, 56, 0.18) 45%,
     rgba(232, 168, 56, 0) 70%
@@ -101,36 +148,64 @@ body {
   animation: hint-pulse 1.8s ease-out infinite;
 }
 
-@keyframes hint-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-.hint-label {
-  animation: hint-bob 1.8s ease-in-out infinite;
+/* Subtle floating idle motion on the whole tap when waiting */
+@keyframes tap-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
 }
 
-/* ----- WordsPanel empty-state arrow ------------------------------------- */
+.tap-hint:not(.tap-pouring) svg {
+  animation: tap-bob 2.6s ease-in-out infinite;
+}
+
+/* ----- Empty-state arrow pulse ----------------------------------------- */
 
 @keyframes pulse-up {
-  0%, 100% { transform: translateY(0); opacity: 0.7; }
-  50% { transform: translateY(-6px); opacity: 1; }
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
 }
+
 .pulse-up {
   animation: pulse-up 1.6s ease-in-out infinite;
 }
 
-/* ----- Mobile / responsive tweaks --------------------------------------- */
+/* ----- Hero card transitions ------------------------------------------- */
 
-/* Below 720px tall, give the tap less vertical room so the glass still
-   has clearance. */
-@media (max-height: 720px) {
-  .hint-label { display: none; }
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Hide the bar wood vertical lines on small screens — too busy. */
+.hero-in {
+  animation: hero-in 0.34s cubic-bezier(0.22, 0.62, 0.2, 1);
+}
+
+/* ----- Mobile / responsive --------------------------------------------- */
+
 @media (max-width: 640px) {
   .bg-bar-wood {
-    background-image: radial-gradient(rgba(26, 26, 26, 0.05) 1px, transparent 1px);
+    background-image: radial-gradient(
+      rgba(26, 26, 26, 0.05) 1px,
+      transparent 1px
+    );
     background-size: 20px 20px;
   }
 }

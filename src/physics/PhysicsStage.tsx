@@ -10,6 +10,7 @@ import { createWorld, type WorldHandle } from './world';
 import { createPintGlass } from './pintGlass';
 import { Dispenser } from './dispenser';
 import { Sensors } from './sensors';
+import { computeTapAllowance } from './sizing';
 
 export interface PhysicsStageHandle {
   startPour: () => void;
@@ -55,9 +56,16 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
       const world = createWorld(canvas);
       worldRef.current = world;
 
+      const tapAllowance = computeTapAllowance(world.height);
       const glassCenterX = world.width / 2;
-      const glassBaseY = world.height - 24;
-      const glass = createPintGlass(world.world, glassCenterX, glassBaseY);
+      const glassBaseY = world.height - 16;
+      const glassH = Math.max(140, world.height - tapAllowance - 28);
+      const glass = createPintGlass(
+        world.world,
+        glassCenterX,
+        glassBaseY,
+        glassH,
+      );
 
       const sensors = new Sensors({
         engine: world.engine,
@@ -72,7 +80,7 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
       sensorsRef.current = sensors;
 
       const spawnX = glassCenterX;
-      const spawnY = Math.min(70, world.height * 0.18);
+      const spawnY = tapAllowance + 6;
       spoutRef.current = { x: spawnX, y: spawnY - 10 };
 
       const dispenser = new Dispenser({

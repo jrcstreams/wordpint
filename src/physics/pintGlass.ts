@@ -7,27 +7,27 @@ export interface PintGlassHandle {
 }
 
 /**
- * Builds a classic conical pint glass: tapered walls (wider at the rim),
- * thick base, drawn as ink-line outlines on the paper background.
+ * Builds a classic conical pint glass. Inner height is supplied by the
+ * caller (so it can scale with the stage); other dimensions are derived
+ * from it to maintain pub-glass proportions.
  */
 export function createPintGlass(
   world: Matter.World,
   centerX: number,
   baseY: number,
+  innerHeight: number,
 ): PintGlassHandle {
-  // Pint dimensions tuned for a stage that's roughly half the viewport height.
-  const innerTopWidth = 220;
-  const innerBottomWidth = 150;
-  const innerHeight = 280;
-  const wallThickness = 8;
-  const baseThickness = 18;
+  const innerTopWidth = innerHeight * 0.78;
+  const innerBottomWidth = innerHeight * 0.56;
+  const wallThickness = Math.max(6, innerHeight * 0.026);
+  const baseThickness = Math.max(12, innerHeight * 0.055);
 
   const tilt = Math.atan2(
     (innerTopWidth - innerBottomWidth) / 2,
     innerHeight,
   );
 
-  // Slightly thicker, longer wall to compensate for the tilt cleanly.
+  // Slightly longer wall than the interior so the tilt cleanly sweeps the rim.
   const wallLength = innerHeight + 16;
 
   const ink: Matter.IBodyRenderOptions = {
@@ -36,11 +36,10 @@ export function createPintGlass(
     lineWidth: 0,
   };
 
-  // Thick base (gives the pint that classic pub feel)
   const bottom = Matter.Bodies.rectangle(
     centerX,
     baseY,
-    innerBottomWidth + wallThickness * 2 + 24,
+    innerBottomWidth + wallThickness * 2 + 28,
     baseThickness,
     {
       isStatic: true,
@@ -52,8 +51,6 @@ export function createPintGlass(
     },
   );
 
-  // The walls live to the OUTSIDE of the inner volume; offset by half the
-  // wall thickness so the inside surfaces line up with the inner widths.
   const wallCenterY = baseY - baseThickness / 2 - innerHeight / 2;
 
   const leftWall = Matter.Bodies.rectangle(
