@@ -10,7 +10,7 @@ export function computeTapAllowance(stageHeight: number): number {
  * Vertical position of the spout opening within the BarTap SVG, expressed
  * as a fraction of the SVG's total height.
  */
-export const TAP_SPOUT_RATIO = 0.92;
+export const TAP_SPOUT_RATIO = 0.935;
 
 /**
  * Pixels of breathing room above the tap (between the nav border and the

@@ -84,26 +84,16 @@ export function WordsPanel({
 
   const heroWord = sorted[0] ?? null;
 
-  const status =
-    sorted.length > 0
-      ? `${sorted.length} word${sorted.length === 1 ? '' : 's'} on offer`
-      : letterCount === 0
-        ? 'awaiting your pour'
-        : 'pour more letters';
-
   return (
     <section className="relative flex-1 min-h-0 bg-paper-grain flex flex-col">
-      <SectionBar
-        sort={sort}
-        setSort={setSort}
-        status={status}
-        letterCount={letterCount}
-        resultCount={sorted.length}
-        showAll={showAll}
-        setShowAll={setShowAll}
-        onEmptyCup={onEmptyCup}
-      />
+      {/* Section label header — just the label */}
+      <header className="shrink-0 px-4 sm:px-6 pt-3 pb-2 border-b border-ink/20">
+        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-ink-mute">
+          Words on Tap
+        </span>
+      </header>
 
+      {/* Body */}
       <div className="flex-1 min-h-0 flex flex-col">
         {sorted.length === 0 ? (
           <EmptyState
@@ -116,123 +106,28 @@ export function WordsPanel({
             page={page}
             pageCount={pageCount}
             setPage={setPage}
+            sort={sort}
+            setSort={setSort}
+            letterCount={letterCount}
+            totalCount={sorted.length}
             onPick={onPick}
+            onShowSingle={() => setShowAll(false)}
+            onEmptyCup={onEmptyCup}
           />
         ) : (
           <HeroView
             word={heroWord!}
             totalCount={sorted.length}
+            sort={sort}
+            setSort={setSort}
+            letterCount={letterCount}
             onNext={() => onPick(heroWord!.word)}
             onShowAll={() => setShowAll(true)}
+            onEmptyCup={onEmptyCup}
           />
         )}
       </div>
     </section>
-  );
-}
-
-/* ============================== Section Bar ============================== */
-/* Eyebrow-style label, NOT a competing serif heading. */
-
-function SectionBar({
-  sort,
-  setSort,
-  status,
-  letterCount,
-  resultCount,
-  showAll,
-  setShowAll,
-  onEmptyCup,
-}: {
-  sort: SortMode;
-  setSort: (m: SortMode) => void;
-  status: string;
-  letterCount: number;
-  resultCount: number;
-  showAll: boolean;
-  setShowAll: (v: boolean) => void;
-  onEmptyCup: () => void;
-}) {
-  return (
-    <div className="shrink-0 px-4 sm:px-6 py-2 sm:py-2.5 border-b border-ink/30 bg-paper flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
-      {/* Subordinate label */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] text-ink whitespace-nowrap">
-          Words on Tap
-        </span>
-        <span className="text-[10px] sm:text-[11px] text-ink-mute whitespace-nowrap hidden sm:inline">
-          {status}
-        </span>
-      </div>
-
-      {/* Pill controls */}
-      <div className="flex items-center gap-1.5 sm:gap-2">
-        <SortPill value={sort} onChange={setSort} />
-
-        {resultCount > 0 && (
-          <Pill onClick={() => setShowAll(!showAll)}>
-            {showAll ? 'Single' : 'Browse all'}
-          </Pill>
-        )}
-
-        {letterCount > 0 && (
-          <Pill onClick={onEmptyCup} aria-label="Empty the cup">
-            Empty cup
-          </Pill>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SortPill({
-  value,
-  onChange,
-}: {
-  value: SortMode;
-  onChange: (m: SortMode) => void;
-}) {
-  return (
-    <div className="relative">
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value as SortMode)}
-        className="appearance-none text-[11px] sm:text-xs font-semibold bg-ink/[0.04] border border-ink/25 hover:border-ink hover:bg-ink/[0.08] rounded-full pl-3 pr-7 py-1.5 cursor-pointer focus:outline-none focus:border-ink focus:bg-ink/[0.08] transition-colors"
-        aria-label="Sort words"
-      >
-        {(Object.keys(SORT_LABELS) as SortMode[]).map((m) => (
-          <option key={m} value={m}>
-            Sort: {SORT_LABELS[m]}
-          </option>
-        ))}
-      </select>
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-ink text-[9px]"
-      >
-        ▾
-      </span>
-    </div>
-  );
-}
-
-function Pill({
-  children,
-  onClick,
-  ...rest
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="text-[11px] sm:text-xs font-semibold px-3 py-1.5 bg-ink/[0.04] border border-ink/25 hover:bg-ink hover:text-paper hover:border-ink rounded-full transition-colors"
-      {...rest}
-    >
-      {children}
-    </button>
   );
 }
 
@@ -241,54 +136,52 @@ function Pill({
 function HeroView({
   word,
   totalCount,
+  sort,
+  setSort,
+  letterCount,
   onNext,
   onShowAll,
+  onEmptyCup,
 }: {
   word: WordResult;
   totalCount: number;
+  sort: SortMode;
+  setSort: (m: SortMode) => void;
+  letterCount: number;
   onNext: () => void;
   onShowAll: () => void;
+  onEmptyCup: () => void;
 }) {
   return (
     <div
       key={word.word}
-      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-5 py-2 sm:py-3 max-w-xl mx-auto w-full"
+      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-5 py-3 max-w-2xl mx-auto w-full"
     >
       {/* Featured word */}
       <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.75rem,4.5vw,2.75rem)]">
         {word.word}
       </h3>
 
-      {/* Definition — Garamond regular, bigger and readable */}
+      {/* Definition — Garamond regular, no italic */}
       <p className="mt-2 max-w-md font-body text-base sm:text-lg leading-snug text-ink-soft">
         {word.definition || 'no definition on file'}
       </p>
 
-      {/* CTA — compact */}
-      <button
-        type="button"
-        onClick={onNext}
-        className="mt-3 sm:mt-4 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-sm"
-      >
-        Next word →
-      </button>
-
-      {/* Footer line */}
-      <p className="mt-2.5 text-[11px] text-ink-mute">
-        {totalCount > 1 ? (
-          <>
-            {totalCount - 1} more available ·{' '}
-            <button
-              type="button"
-              onClick={onShowAll}
-              className="font-medium underline decoration-dotted underline-offset-[3px] hover:text-ink transition"
-            >
-              browse all
-            </button>
-          </>
-        ) : (
-          <>last word standing</>
+      {/* Control row — directly beneath the word */}
+      <div className="mt-4 sm:mt-5 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+        <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
+        <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
+        <SortPill value={sort} onChange={setSort} />
+        {letterCount > 0 && (
+          <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+            Empty Cup
+          </GhostButton>
         )}
+      </div>
+
+      {/* Total count — below controls */}
+      <p className="mt-2.5 text-[11px] text-ink-mute">
+        {totalCount} word{totalCount === 1 ? '' : 's'} on offer
       </p>
     </div>
   );
@@ -301,17 +194,29 @@ function GridView({
   page,
   pageCount,
   setPage,
+  sort,
+  setSort,
+  letterCount,
+  totalCount,
   onPick,
+  onShowSingle,
+  onEmptyCup,
 }: {
   visible: WordResult[];
   page: number;
   pageCount: number;
   setPage: (n: number | ((p: number) => number)) => void;
+  sort: SortMode;
+  setSort: (m: SortMode) => void;
+  letterCount: number;
+  totalCount: number;
   onPick: (word: string) => void;
+  onShowSingle: () => void;
+  onEmptyCup: () => void;
 }) {
   return (
-    <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-6 py-3 sm:py-3.5">
-      {/* Cards: fill the available space, never scroll */}
+    <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-6 py-3">
+      {/* Cards */}
       <ul className="flex-1 min-h-0 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
         {visible.map((r) => (
           <li key={r.word} className="min-h-0">
@@ -332,32 +237,137 @@ function GridView({
         ))}
       </ul>
 
-      {/* Pagination — pinned at the bottom, always visible */}
-      {pageCount > 1 && (
-        <div className="mt-3 shrink-0 flex items-center justify-center gap-2 text-[11px] font-semibold">
-          <button
-            type="button"
-            className="px-3 py-1.5 bg-ink/[0.04] border border-ink/25 hover:bg-ink hover:text-paper rounded-full transition disabled:opacity-30 disabled:hover:bg-ink/[0.04] disabled:hover:text-ink"
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-            disabled={page === 0}
-            aria-label="Previous page"
-          >
-            ‹ Prev
-          </button>
-          <span className="text-ink-mute tabular-nums px-1">
-            {page + 1} / {pageCount}
-          </span>
-          <button
-            type="button"
-            className="px-3 py-1.5 bg-ink/[0.04] border border-ink/25 hover:bg-ink hover:text-paper rounded-full transition disabled:opacity-30 disabled:hover:bg-ink/[0.04] disabled:hover:text-ink"
-            onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
-            disabled={page >= pageCount - 1}
-            aria-label="Next page"
-          >
-            Next ›
-          </button>
+      {/* Control row + count — pinned below the grid */}
+      <div className="mt-3 shrink-0 flex flex-col items-center gap-2">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+          <GhostButton onClick={onShowSingle}>Single Word</GhostButton>
+          <SortPill value={sort} onChange={setSort} />
+          {letterCount > 0 && (
+            <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+              Empty Cup
+            </GhostButton>
+          )}
+          {pageCount > 1 && (
+            <PageNav
+              page={page}
+              pageCount={pageCount}
+              setPage={setPage}
+            />
+          )}
         </div>
-      )}
+        <p className="text-[11px] text-ink-mute">
+          {totalCount} word{totalCount === 1 ? '' : 's'} on offer
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== Buttons ============================== */
+
+function PrimaryButton({
+  children,
+  onClick,
+  ...rest
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-md"
+      {...rest}
+    >
+      {children}
+    </button>
+  );
+}
+
+function GhostButton({
+  children,
+  onClick,
+  ...rest
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-xs font-semibold px-3.5 py-2 bg-paper border border-ink/40 hover:bg-ink hover:text-paper hover:border-ink rounded-md transition-colors"
+      {...rest}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SortPill({
+  value,
+  onChange,
+}: {
+  value: SortMode;
+  onChange: (m: SortMode) => void;
+}) {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value as SortMode)}
+        className="appearance-none text-xs font-semibold bg-paper border border-ink/40 hover:bg-ink hover:text-paper hover:border-ink focus:bg-ink focus:text-paper focus:border-ink rounded-md pl-3.5 pr-8 py-2 cursor-pointer focus:outline-none transition-colors"
+        aria-label="Sort words"
+      >
+        {(Object.keys(SORT_LABELS) as SortMode[]).map((m) => (
+          <option key={m} value={m}>
+            Sort: {SORT_LABELS[m]}
+          </option>
+        ))}
+      </select>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px]"
+      >
+        ▾
+      </span>
+    </div>
+  );
+}
+
+function PageNav({
+  page,
+  pageCount,
+  setPage,
+}: {
+  page: number;
+  pageCount: number;
+  setPage: (n: number | ((p: number) => number)) => void;
+}) {
+  return (
+    <div className="flex items-center gap-1 text-xs font-semibold">
+      <button
+        type="button"
+        className="px-2.5 py-2 bg-paper border border-ink/40 hover:bg-ink hover:text-paper rounded-md transition disabled:opacity-30 disabled:hover:bg-paper disabled:hover:text-ink"
+        onClick={() => setPage((p) => Math.max(0, p - 1))}
+        disabled={page === 0}
+        aria-label="Previous page"
+      >
+        ‹
+      </button>
+      <span className="text-ink-mute tabular-nums px-2">
+        {page + 1}/{pageCount}
+      </span>
+      <button
+        type="button"
+        className="px-2.5 py-2 bg-paper border border-ink/40 hover:bg-ink hover:text-paper rounded-md transition disabled:opacity-30 disabled:hover:bg-paper disabled:hover:text-ink"
+        onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
+        disabled={page >= pageCount - 1}
+        aria-label="Next page"
+      >
+        ›
+      </button>
     </div>
   );
 }
