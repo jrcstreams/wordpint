@@ -86,6 +86,10 @@ export function WordsPanel({
 
   useEffect(() => {
     setPage(0);
+    // Clear the locked word so the next render picks the top entry of
+    // the freshly-sorted list — sort changes should flip the hero
+    // immediately, not stay anchored on the previous selection.
+    setSelectedWordKey(null);
   }, [sort]);
 
   // The displayed hero word: prefer the locked selection if it's still
