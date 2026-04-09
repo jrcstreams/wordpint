@@ -85,7 +85,7 @@ export function WordsPanel({
   const heroWord = sorted[0] ?? null;
 
   return (
-    <div className="relative flex-1 min-h-0 flex flex-col">
+    <div className="relative flex-1 min-h-0 flex flex-col overflow-y-auto">
       {sorted.length === 0 ? (
         <EmptyState
           letterCount={letterCount}
@@ -145,7 +145,7 @@ function HeroView({
   return (
     <div
       key={word.word}
-      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-5 py-3 max-w-2xl mx-auto w-full"
+      className="hero-in my-auto flex flex-col items-center text-center px-5 py-4 max-w-2xl mx-auto w-full"
     >
       {/* Featured word */}
       <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.75rem,4.5vw,2.75rem)]">
@@ -158,12 +158,12 @@ function HeroView({
       </p>
 
       {/* Primary CTA on its own row */}
-      <div className="mt-4 sm:mt-5">
+      <div className="mt-5 sm:mt-6">
         <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
       </div>
 
       {/* Secondary controls on the second row */}
-      <div className="mt-2 sm:mt-2.5 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+      <div className="mt-3 sm:mt-4 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
         <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
         <SortPill value={sort} onChange={setSort} />
         {letterCount > 0 && (
@@ -174,7 +174,7 @@ function HeroView({
       </div>
 
       {/* Total count — bigger, more prominent */}
-      <p className="mt-3 sm:mt-4 text-sm sm:text-base text-ink-soft">
+      <p className="mt-4 sm:mt-5 text-sm sm:text-base text-ink-soft">
         <span className="font-display font-black text-ink">{totalCount}</span>{' '}
         word{totalCount === 1 ? '' : 's'} on offer
       </p>
@@ -313,7 +313,7 @@ function SortPill({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as SortMode)}
-        className="appearance-none text-xs font-semibold bg-paper border border-ink/40 hover:bg-ink hover:text-paper hover:border-ink focus:bg-ink focus:text-paper focus:border-ink rounded-md pl-3.5 pr-8 py-2 cursor-pointer focus:outline-none transition-colors"
+        className="appearance-none text-xs font-semibold bg-paper border border-ink/40 hover:bg-ink hover:text-paper hover:border-ink focus:bg-ink focus:text-paper focus:border-ink rounded-md pl-3.5 pr-9 py-2 cursor-pointer focus:outline-none transition-colors"
         aria-label="Sort words"
       >
         {(Object.keys(SORT_LABELS) as SortMode[]).map((m) => (
@@ -322,12 +322,18 @@ function SortPill({
           </option>
         ))}
       </select>
-      <span
+      <svg
         aria-hidden="true"
-        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px]"
+        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
+        viewBox="0 0 12 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        ▾
-      </span>
+        <path d="M3 4.5 L6 7.5 L9 4.5" />
+      </svg>
     </div>
   );
 }
@@ -379,7 +385,7 @@ function EmptyState({
 }) {
   if (!dictionaryReady) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="my-auto text-center">
         <p className="text-[11px] uppercase tracking-[0.18em] text-ink-mute">
           opening the dictionary…
         </p>
@@ -388,7 +394,7 @@ function EmptyState({
   }
   if (letterCount === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-4 sm:gap-5 text-center px-4">
+      <div className="my-auto flex flex-col items-center gap-4 sm:gap-5 text-center px-4">
         <p className="font-display text-2xl sm:text-3xl font-black text-ink leading-none">
           Pour yourself a pint.
         </p>
@@ -399,7 +405,7 @@ function EmptyState({
     );
   }
   return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-4 sm:gap-5 text-center px-4">
+    <div className="my-auto flex flex-col items-center gap-4 sm:gap-5 text-center px-4">
       <p className="font-display text-xl sm:text-2xl font-black text-ink leading-none">
         No words yet.
       </p>

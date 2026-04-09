@@ -60,7 +60,7 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
       worldRef.current = world;
 
       const tapAllowance = computeTapAllowance(world.height);
-      const cupBottomMargin = 16;
+      const cupBottomMargin = 28;
       const glassCenterX = world.width / 2;
       const glassBaseY = world.height - cupBottomMargin;
       const glassH = Math.max(

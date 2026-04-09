@@ -34,17 +34,12 @@ body {
 }
 
 .bg-bar-wood {
-  background-color: #f1ead5;
+  background-color: #ede5cf;
   background-image:
-    repeating-linear-gradient(
-      90deg,
-      rgba(26, 26, 26, 0) 0px,
-      rgba(26, 26, 26, 0) 78px,
-      rgba(26, 26, 26, 0.06) 79px,
-      rgba(26, 26, 26, 0.06) 80px
-    ),
-    radial-gradient(rgba(26, 26, 26, 0.05) 1px, transparent 1px);
-  background-size: auto, 28px 28px;
+    radial-gradient(rgba(26, 26, 26, 0.045) 1px, transparent 1px),
+    radial-gradient(rgba(26, 26, 26, 0.035) 1px, transparent 1px);
+  background-size: 32px 32px, 47px 47px;
+  background-position: 0 0, 16px 23px;
 }
 
 .tab-strip {
@@ -176,10 +171,6 @@ body {
 
 @media (max-width: 640px) {
   .bg-bar-wood {
-    background-image: radial-gradient(
-      rgba(26, 26, 26, 0.05) 1px,
-      transparent 1px
-    );
-    background-size: 20px 20px;
+    background-size: 24px 24px, 35px 35px;
   }
 }
