@@ -401,23 +401,23 @@ function EmptyState({
   }
   if (letterCount === 0) {
     return (
-      <div className="my-auto flex flex-col items-center gap-4 sm:gap-5 text-center px-4">
+      <div className="my-auto flex flex-col items-center gap-3 sm:gap-4 text-center px-4">
         <p className="font-display text-2xl sm:text-3xl font-black text-ink leading-none">
           Pour yourself a pint.
         </p>
-        <p className="text-sm sm:text-base text-ink-mute pulse-up">
-          ↑ pull the tap above
+        <p className="text-sm sm:text-base text-ink-mute">
+          Pull the tap above.
         </p>
       </div>
     );
   }
   return (
-    <div className="my-auto flex flex-col items-center gap-4 sm:gap-5 text-center px-4">
+    <div className="my-auto flex flex-col items-center gap-3 sm:gap-4 text-center px-4">
       <p className="font-display text-xl sm:text-2xl font-black text-ink leading-none">
         No words yet.
       </p>
-      <p className="text-sm sm:text-base text-ink-mute pulse-up">
-        ↑ pour a few more letters
+      <p className="text-sm sm:text-base text-ink-mute">
+        Pour a few more letters.
       </p>
     </div>
   );
