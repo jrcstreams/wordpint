@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { computeTapAllowance, TAP_TOP_OFFSET } from '../physics/sizing';
+import {
+  computeTapAllowance,
+  computeTapTopOffset,
+} from '../physics/sizing';
 
 interface BarTapProps {
   onStart: () => void;
@@ -20,11 +23,16 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [pouring, setPouring] = useState(false);
   const [tapHeight, setTapHeight] = useState(220);
+  const [tapTop, setTapTop] = useState(14);
 
   useEffect(() => {
     const el = wrapperRef.current?.parentElement;
     if (!el) return;
-    const update = () => setTapHeight(computeTapAllowance(el.clientHeight));
+    const update = () => {
+      const h = el.clientHeight;
+      setTapHeight(computeTapAllowance(h));
+      setTapTop(computeTapTopOffset(h));
+    };
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
@@ -59,7 +67,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
     <div
       ref={wrapperRef}
       className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
-      style={{ top: TAP_TOP_OFFSET, width: svgWidth, height: tapHeight }}
+      style={{ top: tapTop, width: svgWidth, height: tapHeight }}
     >
       <button
         type="button"
