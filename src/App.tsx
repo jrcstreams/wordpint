@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppStore } from './state/store';
 import { loadWordIndex } from './words/loader';
 import { findWords } from './words/findWords';
@@ -7,10 +7,12 @@ import { BarTap } from './ui/BarTap';
 import { WordsPanel } from './ui/WordsPanel';
 import { HistoryStrip } from './ui/HistoryStrip';
 import { DictionaryBanner } from './ui/DictionaryBanner';
+import { WordModal } from './ui/WordModal';
 import type { WordResult } from './words/types';
 
 export default function App() {
   const stageRef = useRef<PhysicsStageHandle>(null);
+  const [modalWord, setModalWord] = useState<string | null>(null);
 
   const lettersInGlass = useAppStore((s) => s.lettersInGlass);
   const wordIndex = useAppStore((s) => s.wordIndex);
@@ -60,31 +62,23 @@ export default function App() {
 
   const showTapHint = lettersInGlass.size === 0 && history.length === 0;
 
+  const modalDefinition =
+    modalWord && wordIndex ? wordIndex.definitions[modalWord] ?? null : null;
+
   return (
     <div className="flex flex-col h-full bg-paper text-ink">
       {/* ============ TOP NAV ============ */}
-      <header className="shrink-0 border-b-2 border-ink bg-paper px-4 sm:px-6 py-3 sm:py-3.5 flex items-baseline justify-between gap-4">
-        <div className="flex items-baseline gap-3 sm:gap-5 min-w-0">
-          <h1 className="font-display text-2xl sm:text-3xl md:text-[2rem] font-black tracking-tight text-ink leading-none whitespace-nowrap">
-            Pint{' '}
-            <span className="font-body italic font-normal text-[0.55em] text-ink-soft align-middle">
-              of
-            </span>{' '}
-            Words
-          </h1>
-          <p className="hidden md:block font-body italic text-sm text-ink-mute leading-none whitespace-nowrap">
-            pour a pint, learn a word
-          </p>
-        </div>
-        <div className="hidden sm:flex items-center gap-3">
-          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink-mute">
-            est. 2026
-          </span>
-        </div>
+      <header className="shrink-0 border-b-2 border-ink bg-paper px-4 sm:px-6 py-3 sm:py-4">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-ink leading-none">
+          Pint of Words
+        </h1>
+        <p className="text-xs sm:text-sm text-ink-mute mt-1.5 leading-none">
+          pour a pint, learn a word
+        </p>
       </header>
 
       {/* ============ POUR STAGE ============ */}
-      <div className="relative basis-[40%] sm:basis-[44%] grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink">
+      <div className="relative basis-[42%] sm:basis-[44%] grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink">
         <PhysicsStage ref={stageRef} />
         <BarTap
           onStart={() => stageRef.current?.startPour()}
@@ -103,8 +97,15 @@ export default function App() {
           onPick={onPickWord}
           onEmptyCup={onEmptyCup}
         />
-        <HistoryStrip history={history} />
+        <HistoryStrip history={history} onWordClick={setModalWord} />
       </div>
+
+      {/* ============ MODAL ============ */}
+      <WordModal
+        word={modalWord}
+        definition={modalDefinition}
+        onClose={() => setModalWord(null)}
+      />
     </div>
   );
 }

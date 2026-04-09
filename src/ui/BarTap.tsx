@@ -4,22 +4,21 @@ import { computeTapAllowance } from '../physics/sizing';
 interface BarTapProps {
   onStart: () => void;
   onStop: () => void;
-  /** True until the user has poured at least once — drives the glow + tooltip. */
+  /** True until the user has poured at least once — drives the glow ring. */
   showHint: boolean;
 }
 
 /**
- * A monochrome draft tap whose handle paddle IS the Pint of Words brand
- * placement. Stacked "PINT / of / WORDS" wordmark with ornaments inside a
- * double-framed cream paddle, mounted on a chrome body and angled spout.
- *
- * Press and hold the assembly to pour; the entire branded head pivots
- * forward at the body collar like a real beer tap.
+ * A monochrome draft tap whose paddle is the brand placement: a tall
+ * cream paddle with a double-frame ornament containing CLICK / to / POUR
+ * stacked vertically. The paddle dominates the assembly so the
+ * instruction is impossible to miss. Press and hold to pour; the head
+ * pivots forward at the body collar.
  */
 export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [pouring, setPouring] = useState(false);
-  const [tapHeight, setTapHeight] = useState(180);
+  const [tapHeight, setTapHeight] = useState(220);
 
   useEffect(() => {
     const el = wrapperRef.current?.parentElement;
@@ -51,8 +50,8 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
     [onStop, pouring],
   );
 
-  // viewBox is 200×260; aspect ratio drives the wrapper width.
-  const aspect = 200 / 260;
+  // viewBox is 220×280; aspect drives the wrapper width.
+  const aspect = 220 / 280;
   const svgWidth = tapHeight * aspect;
 
   return (
@@ -74,7 +73,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
         } ${showHint ? 'tap-hint' : ''}`}
       >
         <svg
-          viewBox="0 0 200 260"
+          viewBox="0 0 220 280"
           width="100%"
           height="100%"
           fill="none"
@@ -83,47 +82,47 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
         >
           {/* ============ HANDLE GROUP (pivots when pouring) ============ */}
           <g className="tap-handle">
-            {/* Outer paddle (black) */}
+            {/* Outer paddle (black) — large */}
             <rect
-              x="50"
+              x="30"
               y="2"
-              width="100"
-              height="124"
-              rx="10"
+              width="160"
+              height="158"
+              rx="12"
               fill="#1a1a1a"
             />
 
             {/* Cream inset */}
             <rect
-              x="56"
-              y="8"
-              width="88"
-              height="112"
-              rx="5"
+              x="38"
+              y="10"
+              width="144"
+              height="142"
+              rx="6"
               fill="#fbf7ec"
               stroke="#1a1a1a"
-              strokeWidth="1.5"
+              strokeWidth="1.8"
             />
 
             {/* Inner thin frame ornament */}
             <rect
-              x="60"
-              y="12"
-              width="80"
-              height="104"
-              rx="3"
+              x="44"
+              y="16"
+              width="132"
+              height="130"
+              rx="4"
               fill="none"
               stroke="#1a1a1a"
-              strokeWidth="0.6"
+              strokeWidth="0.7"
             />
 
             {/* Top star */}
             <text
-              x="100"
-              y="29"
+              x="110"
+              y="34"
               textAnchor="middle"
               fontFamily="Georgia, serif"
-              fontSize="13"
+              fontSize="16"
               fill="#1a1a1a"
             >
               ✦
@@ -131,108 +130,108 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
 
             {/* CLICK */}
             <text
-              x="100"
-              y="54"
+              x="110"
+              y="68"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
-              fontSize="22"
+              fontSize="30"
               fontWeight="900"
               fill="#1a1a1a"
-              letterSpacing="1"
+              letterSpacing="1.5"
             >
               CLICK
             </text>
 
             {/* "to" with flanking rules */}
             <line
-              x1="68"
-              y1="64"
-              x2="90"
-              y2="64"
+              x1="60"
+              y1="83"
+              x2="92"
+              y2="83"
               stroke="#1a1a1a"
-              strokeWidth="0.7"
+              strokeWidth="0.9"
             />
             <text
-              x="100"
-              y="69"
+              x="110"
+              y="89"
               textAnchor="middle"
               fontFamily='"EB Garamond", Georgia, serif'
-              fontSize="13"
+              fontSize="17"
               fontStyle="italic"
               fill="#1a1a1a"
             >
               to
             </text>
             <line
-              x1="110"
-              y1="64"
-              x2="132"
-              y2="64"
+              x1="128"
+              y1="83"
+              x2="160"
+              y2="83"
               stroke="#1a1a1a"
-              strokeWidth="0.7"
+              strokeWidth="0.9"
             />
 
             {/* POUR */}
             <text
-              x="100"
-              y="92"
+              x="110"
+              y="121"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
-              fontSize="22"
+              fontSize="30"
               fontWeight="900"
               fill="#1a1a1a"
-              letterSpacing="1"
+              letterSpacing="1.5"
             >
               POUR
             </text>
 
             {/* Bottom star */}
             <text
-              x="100"
-              y="111"
+              x="110"
+              y="142"
               textAnchor="middle"
               fontFamily="Georgia, serif"
-              fontSize="13"
+              fontSize="16"
               fill="#1a1a1a"
             >
               ✦
             </text>
 
             {/* Lower neck connecting to body collar */}
-            <rect x="93" y="126" width="14" height="6" fill="#1a1a1a" />
+            <rect x="103" y="160" width="14" height="6" fill="#1a1a1a" />
           </g>
 
           {/* ============ TAP BODY (static) ============ */}
-          {/* Mounting collar between handle and body */}
-          <rect x="78" y="132" width="44" height="11" rx="2" fill="#1a1a1a" />
+          {/* Mounting collar */}
+          <rect x="86" y="166" width="48" height="12" rx="2" fill="#1a1a1a" />
 
           {/* Chrome cylinder body */}
-          <rect x="84" y="143" width="32" height="62" rx="6" fill="#1a1a1a" />
+          <rect x="92" y="178" width="36" height="56" rx="6" fill="#1a1a1a" />
           {/* Vertical highlight stripe */}
           <rect
-            x="87"
-            y="147"
-            width="4"
-            height="54"
+            x="95"
+            y="182"
+            width="5"
+            height="48"
             rx="2"
             fill="rgba(255,255,255,0.2)"
           />
           {/* Decorative bands */}
-          <rect x="84" y="155" width="32" height="2" fill="#fbf7ec" />
-          <rect x="84" y="191" width="32" height="2" fill="#fbf7ec" />
+          <rect x="92" y="190" width="36" height="2" fill="#fbf7ec" />
+          <rect x="92" y="220" width="36" height="2" fill="#fbf7ec" />
 
           {/* ============ SPOUT ============ */}
-          <path d="M84,205 L80,221 L120,221 L116,205 Z" fill="#1a1a1a" />
-          <rect x="84" y="221" width="32" height="6" rx="1" fill="#1a1a1a" />
-          <ellipse cx="100" cy="229" rx="13" ry="2" fill="#3a3328" />
+          <path d="M92,234 L88,250 L132,250 L128,234 Z" fill="#1a1a1a" />
+          <rect x="92" y="250" width="36" height="6" rx="1" fill="#1a1a1a" />
+          <ellipse cx="110" cy="258" rx="14" ry="2" fill="#3a3328" />
 
           {/* Idle drip */}
           {!pouring && (
             <circle
               className="tap-drip"
-              cx="100"
-              cy="231"
-              r="2"
+              cx="110"
+              cy="260"
+              r="2.2"
               fill="#e8a838"
               opacity="0.55"
             />
@@ -241,10 +240,10 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
           {/* Pour stream */}
           <rect
             className="tap-stream"
-            x="96"
-            y="233"
-            width="8"
-            height="34"
+            x="106"
+            y="262"
+            width="9"
+            height="36"
             rx="3"
             fill="#e8a838"
             opacity="0"
@@ -255,7 +254,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
         {showHint && (
           <span
             aria-hidden="true"
-            className="hint-glow absolute left-1/2 top-[24%] -translate-x-1/2 -translate-y-1/2 w-[110%] h-[55%] rounded-full pointer-events-none"
+            className="hint-glow absolute left-1/2 top-[28%] -translate-x-1/2 -translate-y-1/2 w-[95%] h-[58%] rounded-full pointer-events-none"
           />
         )}
       </button>

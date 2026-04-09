@@ -93,7 +93,7 @@ export function WordsPanel({
 
   return (
     <section className="relative flex-1 min-h-0 bg-paper-grain flex flex-col">
-      <SectionHeader
+      <SectionBar
         sort={sort}
         setSort={setSort}
         status={status}
@@ -131,9 +131,10 @@ export function WordsPanel({
   );
 }
 
-/* ============================== Section Header ============================== */
+/* ============================== Section Bar ============================== */
+/* Eyebrow-style label, NOT a competing serif heading. */
 
-function SectionHeader({
+function SectionBar({
   sort,
   setSort,
   status,
@@ -153,38 +154,38 @@ function SectionHeader({
   onEmptyCup: () => void;
 }) {
   return (
-    <header className="shrink-0 px-4 sm:px-6 py-3 border-b-2 border-ink bg-paper flex items-center justify-between gap-3 flex-wrap">
-      {/* Title group */}
-      <div className="flex items-baseline gap-3 min-w-0">
-        <h2 className="font-display text-xl sm:text-2xl font-black tracking-tight text-ink leading-none">
+    <div className="shrink-0 px-4 sm:px-6 py-2 sm:py-2.5 border-b border-ink/30 bg-paper flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
+      {/* Subordinate label */}
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] text-ink whitespace-nowrap">
           Words on Tap
-        </h2>
-        <span className="text-xs text-ink-mute whitespace-nowrap">
+        </span>
+        <span className="text-[10px] sm:text-[11px] text-ink-mute whitespace-nowrap hidden sm:inline">
           {status}
         </span>
       </div>
 
-      {/* Controls — prominent, sans, bordered */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <SortSelect value={sort} onChange={setSort} />
+      {/* Pill controls */}
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <SortPill value={sort} onChange={setSort} />
 
         {resultCount > 0 && (
-          <ToolbarButton onClick={() => setShowAll(!showAll)}>
+          <Pill onClick={() => setShowAll(!showAll)}>
             {showAll ? 'Single' : 'Browse all'}
-          </ToolbarButton>
+          </Pill>
         )}
 
         {letterCount > 0 && (
-          <ToolbarButton onClick={onEmptyCup} aria-label="Empty the cup">
+          <Pill onClick={onEmptyCup} aria-label="Empty the cup">
             Empty cup
-          </ToolbarButton>
+          </Pill>
         )}
       </div>
-    </header>
+    </div>
   );
 }
 
-function SortSelect({
+function SortPill({
   value,
   onChange,
 }: {
@@ -196,7 +197,7 @@ function SortSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as SortMode)}
-        className="appearance-none text-xs font-medium uppercase tracking-[0.12em] bg-paper border border-ink/70 hover:border-ink rounded pl-3 pr-8 py-2 cursor-pointer focus:outline-none focus:border-ink transition-colors"
+        className="appearance-none text-[11px] sm:text-xs font-semibold bg-ink/[0.04] border border-ink/25 hover:border-ink hover:bg-ink/[0.08] rounded-full pl-3 pr-7 py-1.5 cursor-pointer focus:outline-none focus:border-ink focus:bg-ink/[0.08] transition-colors"
         aria-label="Sort words"
       >
         {(Object.keys(SORT_LABELS) as SortMode[]).map((m) => (
@@ -207,7 +208,7 @@ function SortSelect({
       </select>
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-ink text-[10px]"
+        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-ink text-[9px]"
       >
         ▾
       </span>
@@ -215,7 +216,7 @@ function SortSelect({
   );
 }
 
-function ToolbarButton({
+function Pill({
   children,
   onClick,
   ...rest
@@ -227,7 +228,7 @@ function ToolbarButton({
     <button
       type="button"
       onClick={onClick}
-      className="text-xs font-medium uppercase tracking-[0.12em] px-3 py-2 border border-ink/70 hover:bg-ink hover:text-paper rounded transition-colors"
+      className="text-[11px] sm:text-xs font-semibold px-3 py-1.5 bg-ink/[0.04] border border-ink/25 hover:bg-ink hover:text-paper hover:border-ink rounded-full transition-colors"
       {...rest}
     >
       {children}
@@ -251,55 +252,53 @@ function HeroView({
   return (
     <div
       key={word.word}
-      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-6 py-5 sm:py-7 max-w-3xl mx-auto w-full"
+      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-5 py-4 sm:py-6 max-w-2xl mx-auto w-full"
     >
-      {/* The featured word */}
-      <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(2.4rem,6.5vw,4.25rem)]">
+      {/* Featured word */}
+      <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(2rem,5.2vw,3.25rem)]">
         {word.word}
       </h3>
 
       {/* Definition with ornamental serif quotes */}
-      <div className="relative mt-5 sm:mt-6 max-w-xl px-6">
+      <div className="relative mt-3 sm:mt-4 max-w-md px-5">
         <span
           aria-hidden="true"
-          className="absolute left-0 -top-3 sm:-top-4 font-display text-3xl sm:text-4xl text-ink/30 leading-none select-none"
+          className="absolute left-0 -top-2 sm:-top-3 font-display text-2xl sm:text-3xl text-ink/30 leading-none select-none"
         >
           “
         </span>
-        <p className="font-body italic text-base sm:text-lg leading-snug text-ink-soft">
+        <p className="font-body italic text-[15px] sm:text-base leading-snug text-ink-soft">
           {word.definition || 'no definition on file'}
         </p>
         <span
           aria-hidden="true"
-          className="absolute right-0 -bottom-5 sm:-bottom-6 font-display text-3xl sm:text-4xl text-ink/30 leading-none select-none"
+          className="absolute right-0 -bottom-4 font-display text-2xl sm:text-3xl text-ink/30 leading-none select-none"
         >
           ”
         </span>
       </div>
 
-      {/* Primary CTA — sans, clean */}
+      {/* CTA — compact, sans, semibold */}
       <button
         type="button"
         onClick={onNext}
-        className="mt-7 sm:mt-9 text-sm font-semibold uppercase tracking-[0.16em] px-7 py-3 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[2px] active:translate-y-[2px] rounded-sm"
+        className="mt-5 sm:mt-7 text-xs sm:text-[13px] font-semibold uppercase tracking-[0.14em] px-5 py-2.5 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[2px] active:translate-y-[2px] rounded-sm"
       >
         Next word →
       </button>
 
-      {/* Footer */}
-      <p className="mt-5 text-xs text-ink-mute">
+      {/* Footer line */}
+      <p className="mt-3 sm:mt-4 text-[11px] text-ink-mute">
         {totalCount > 1 ? (
           <>
-            <span className="text-ink/40">·</span> {totalCount - 1} more
-            available <span className="text-ink/40">·</span>{' '}
+            {totalCount - 1} more available ·{' '}
             <button
               type="button"
               onClick={onShowAll}
               className="font-medium underline decoration-dotted underline-offset-[3px] hover:text-ink transition"
             >
               browse all
-            </button>{' '}
-            <span className="text-ink/40">·</span>
+            </button>
           </>
         ) : (
           <>last word standing</>
@@ -325,20 +324,20 @@ function GridView({
   onPick: (word: string) => void;
 }) {
   return (
-    <div className="flex-1 flex flex-col px-4 sm:px-6 py-4 sm:py-5">
-      <ul className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 flex-1">
+    <div className="flex-1 flex flex-col px-4 sm:px-6 py-3 sm:py-4">
+      <ul className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 flex-1">
         {visible.map((r) => (
           <li key={r.word}>
             <button
               type="button"
               onClick={() => onPick(r.word)}
-              className="group w-full h-full text-left bg-paper border border-ink/70 rounded-sm shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] transition-all px-3 py-2.5"
+              className="group w-full h-full text-left bg-paper border border-ink/60 rounded-sm shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] transition-all px-2.5 py-2"
               aria-label={`Use the word ${r.word}`}
             >
-              <div className="font-display text-lg sm:text-xl font-black tracking-tight text-ink lowercase leading-none">
+              <div className="font-display text-base sm:text-lg font-black tracking-tight text-ink lowercase leading-none">
                 {r.word}
               </div>
-              <p className="mt-1.5 font-body italic text-xs sm:text-sm text-ink-soft leading-snug line-clamp-2">
+              <p className="mt-1 font-body italic text-[11px] sm:text-xs text-ink-soft leading-snug line-clamp-2">
                 {r.definition || '— no definition —'}
               </p>
             </button>
@@ -347,22 +346,22 @@ function GridView({
       </ul>
 
       {pageCount > 1 && (
-        <div className="mt-4 flex items-center justify-center gap-3 text-xs font-medium">
+        <div className="mt-3 flex items-center justify-center gap-2 text-[11px] font-semibold">
           <button
             type="button"
-            className="px-3 py-1.5 border border-ink/70 rounded hover:bg-ink hover:text-paper transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink"
+            className="px-3 py-1.5 bg-ink/[0.04] border border-ink/25 hover:bg-ink hover:text-paper rounded-full transition disabled:opacity-30 disabled:hover:bg-ink/[0.04] disabled:hover:text-ink"
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={page === 0}
             aria-label="Previous page"
           >
             ‹ Prev
           </button>
-          <span className="text-ink-mute tabular-nums">
-            Page {page + 1} of {pageCount}
+          <span className="text-ink-mute tabular-nums text-[11px] px-1">
+            {page + 1} / {pageCount}
           </span>
           <button
             type="button"
-            className="px-3 py-1.5 border border-ink/70 rounded hover:bg-ink hover:text-paper transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink"
+            className="px-3 py-1.5 bg-ink/[0.04] border border-ink/25 hover:bg-ink hover:text-paper rounded-full transition disabled:opacity-30 disabled:hover:bg-ink/[0.04] disabled:hover:text-ink"
             onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
             disabled={page >= pageCount - 1}
             aria-label="Next page"
@@ -387,7 +386,7 @@ function EmptyState({
   if (!dictionaryReady) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-xs uppercase tracking-[0.18em] text-ink-mute">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-ink-mute">
           opening the dictionary…
         </p>
       </div>
@@ -395,22 +394,22 @@ function EmptyState({
   }
   if (letterCount === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-4">
-        <p className="font-display text-3xl sm:text-4xl font-black text-ink leading-none">
+      <div className="flex-1 flex flex-col items-center justify-center gap-2 text-center px-4">
+        <p className="font-display text-2xl sm:text-3xl font-black text-ink leading-none">
           Pour yourself a pint.
         </p>
-        <p className="font-body italic text-base sm:text-lg text-ink-mute pulse-up">
+        <p className="font-body italic text-sm sm:text-base text-ink-mute pulse-up">
           ↑ pull the tap above
         </p>
       </div>
     );
   }
   return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-4">
-      <p className="font-display text-2xl sm:text-3xl font-black text-ink leading-none">
+    <div className="flex-1 flex flex-col items-center justify-center gap-2 text-center px-4">
+      <p className="font-display text-xl sm:text-2xl font-black text-ink leading-none">
         No words yet.
       </p>
-      <p className="font-body italic text-base text-ink-mute pulse-up">
+      <p className="font-body italic text-sm text-ink-mute pulse-up">
         ↑ pour a few more letters
       </p>
     </div>
