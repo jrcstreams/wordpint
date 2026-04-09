@@ -2,5 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root { height: 100%; margin: 0; }
-body { font-family: ui-sans-serif, system-ui, sans-serif; background: #0e0e10; color: #f5f5f5; }
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'EB Garamond', Georgia, serif;
+  background: #f7f3ea;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Subtle paper grain via radial speckle */
+.bg-paper-grain {
+  background-color: #f7f3ea;
+  background-image:
+    radial-gradient(rgba(26, 26, 26, 0.04) 1px, transparent 1px),
+    radial-gradient(rgba(26, 26, 26, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px, 47px 47px;
+  background-position: 0 0, 16px 23px;
+}
+
+/* Bar wood texture (monochrome — vertical plank lines) */
+.bg-bar-wood {
+  background-color: #f1ead5;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(26, 26, 26, 0) 0px,
+      rgba(26, 26, 26, 0) 78px,
+      rgba(26, 26, 26, 0.06) 79px,
+      rgba(26, 26, 26, 0.06) 80px
+    ),
+    radial-gradient(rgba(26, 26, 26, 0.05) 1px, transparent 1px);
+  background-size: auto, 28px 28px;
+}
+
+/* Receipt paper edges */
+.receipt {
+  background: #fbf7ec;
+  background-image: linear-gradient(
+    180deg,
+    rgba(26, 26, 26, 0.04) 0,
+    rgba(26, 26, 26, 0.04) 1px,
+    transparent 1px,
+    transparent 18px
+  );
+  background-size: 100% 18px;
+  border-top: 2px dashed #1a1a1a;
+}
+
+@keyframes pulse-up {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50% { transform: translateY(-6px); opacity: 1; }
+}
+
+.pulse-up {
+  animation: pulse-up 1.6s ease-in-out infinite;
+}
+
+@keyframes tap-tilt {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-12deg); }
+}
+
+.tap-pouring .tap-handle {
+  transform-origin: 50% 80%;
+  animation: tap-tilt 0.18s ease-out forwards;
+}
+
+@keyframes stream-flow {
+  0% { transform: scaleY(0.4); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 0.6; }
+}
+
+.tap-pouring .tap-stream {
+  transform-origin: top center;
+  animation: stream-flow 0.18s ease-out forwards;
+}

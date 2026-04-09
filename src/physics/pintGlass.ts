@@ -6,58 +6,89 @@ export interface PintGlassHandle {
   interior: { x: number; y: number; width: number; height: number };
 }
 
+/**
+ * Builds a classic conical pint glass: tapered walls (wider at the rim),
+ * thick base, drawn as ink-line outlines on the paper background.
+ */
 export function createPintGlass(
   world: Matter.World,
   centerX: number,
   baseY: number,
 ): PintGlassHandle {
-  // Pint dimensions (px). Slight outward taper at the rim.
-  const innerTopWidth = 240;
-  const innerBottomWidth = 180;
-  const innerHeight = 360;
-  const wallThickness = 14;
+  // Pint dimensions tuned for a stage that's roughly half the viewport height.
+  const innerTopWidth = 220;
+  const innerBottomWidth = 150;
+  const innerHeight = 280;
+  const wallThickness = 8;
+  const baseThickness = 18;
+
   const tilt = Math.atan2(
     (innerTopWidth - innerBottomWidth) / 2,
     innerHeight,
   );
 
-  const renderOpts: Matter.IBodyRenderOptions = {
-    fillStyle: '#e8e6df',
-    strokeStyle: '#a8a499',
-    lineWidth: 2,
+  // Slightly thicker, longer wall to compensate for the tilt cleanly.
+  const wallLength = innerHeight + 16;
+
+  const ink: Matter.IBodyRenderOptions = {
+    fillStyle: '#1a1a1a',
+    strokeStyle: '#1a1a1a',
+    lineWidth: 0,
   };
 
+  // Thick base (gives the pint that classic pub feel)
   const bottom = Matter.Bodies.rectangle(
     centerX,
     baseY,
-    innerBottomWidth + wallThickness * 2,
-    wallThickness,
-    { isStatic: true, label: 'glass-bottom', render: renderOpts },
+    innerBottomWidth + wallThickness * 2 + 24,
+    baseThickness,
+    {
+      isStatic: true,
+      label: 'glass-bottom',
+      friction: 0.6,
+      restitution: 0.05,
+      chamfer: { radius: 4 },
+      render: ink,
+    },
   );
 
+  // The walls live to the OUTSIDE of the inner volume; offset by half the
+  // wall thickness so the inside surfaces line up with the inner widths.
+  const wallCenterY = baseY - baseThickness / 2 - innerHeight / 2;
+
   const leftWall = Matter.Bodies.rectangle(
-    centerX - innerBottomWidth / 2 - wallThickness / 2 - (innerTopWidth - innerBottomWidth) / 4,
-    baseY - innerHeight / 2 - wallThickness / 2,
+    centerX -
+      innerBottomWidth / 2 -
+      wallThickness / 2 -
+      (innerTopWidth - innerBottomWidth) / 4,
+    wallCenterY,
     wallThickness,
-    innerHeight,
+    wallLength,
     {
       isStatic: true,
       angle: -tilt,
       label: 'glass-left',
-      render: renderOpts,
+      friction: 0.5,
+      restitution: 0.1,
+      render: ink,
     },
   );
 
   const rightWall = Matter.Bodies.rectangle(
-    centerX + innerBottomWidth / 2 + wallThickness / 2 + (innerTopWidth - innerBottomWidth) / 4,
-    baseY - innerHeight / 2 - wallThickness / 2,
+    centerX +
+      innerBottomWidth / 2 +
+      wallThickness / 2 +
+      (innerTopWidth - innerBottomWidth) / 4,
+    wallCenterY,
     wallThickness,
-    innerHeight,
+    wallLength,
     {
       isStatic: true,
       angle: tilt,
       label: 'glass-right',
-      render: renderOpts,
+      friction: 0.5,
+      restitution: 0.1,
+      render: ink,
     },
   );
 
@@ -67,7 +98,7 @@ export function createPintGlass(
     bodies: [bottom, leftWall, rightWall],
     interior: {
       x: centerX - innerTopWidth / 2,
-      y: baseY - innerHeight - wallThickness,
+      y: baseY - baseThickness / 2 - innerHeight,
       width: innerTopWidth,
       height: innerHeight,
     },

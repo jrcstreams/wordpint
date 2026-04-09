@@ -24,7 +24,10 @@ describe('DictionaryBanner', () => {
 
   it('shows the error message and a retry button when status is error', () => {
     render(<DictionaryBanner status="error" onRetry={() => {}} />);
-    expect(screen.getByText(/couldn't load dictionary/i)).toBeInTheDocument();
+    expect(screen.getByText(/dictionary is closed/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/couldn't load the word list/i),
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
   });
 

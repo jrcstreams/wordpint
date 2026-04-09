@@ -15,7 +15,7 @@ export function createWorld(canvas: HTMLCanvasElement): WorldHandle {
   const height = canvas.clientHeight;
 
   const engine = Matter.Engine.create({
-    gravity: { x: 0, y: 1, scale: 0.0012 },
+    gravity: { x: 0, y: 1, scale: 0.0014 },
   });
 
   const render = Matter.Render.create({
@@ -25,7 +25,7 @@ export function createWorld(canvas: HTMLCanvasElement): WorldHandle {
       width,
       height,
       wireframes: false,
-      background: '#0e0e10',
+      background: 'transparent',
     },
   });
 
