@@ -76,7 +76,7 @@ export default function App() {
           <h1 className="text-2xl sm:text-3xl md:text-[2rem] font-black tracking-tight text-ink leading-none whitespace-nowrap">
             WordPint
           </h1>
-          <p className="hidden sm:block text-xs sm:text-[13px] font-medium text-ink-mute leading-none whitespace-nowrap">
+          <p className="text-[11px] sm:text-[13px] font-medium text-ink-mute leading-none whitespace-nowrap">
             Pour a Pint, Learn a Word
           </p>
         </div>
@@ -129,7 +129,7 @@ export default function App() {
             <li>
               <span className="font-semibold text-ink-soft">3.</span>{' '}
               <span className="font-semibold text-ink-soft">"Next Word"</span>{' '}
-              removes them.
+              removes letters.
             </li>
           </ol>
         </div>
@@ -154,7 +154,7 @@ export default function App() {
       </div>
 
       {/* ============ PAGE FOOTER ============ */}
-      <footer className="shrink-0 border-t border-ink/30 bg-paper px-4 sm:px-6 py-1.5 sm:py-2 flex items-center justify-between gap-3 text-[10px] sm:text-[11px] text-ink-mute">
+      <footer className="shrink-0 border-t border-ink/30 bg-paper px-4 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between gap-3 text-[10px] sm:text-[11px] text-ink-mute">
         <span>
           Definitions from{' '}
           <a
@@ -168,7 +168,14 @@ export default function App() {
         </span>
         <span>
           Created by{' '}
-          <span className="font-medium text-ink">John Choudhari</span>
+          <a
+            href="https://www.linkedin.com/in/johnchoudhari/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-ink underline decoration-dotted underline-offset-2 hover:text-ink-mute transition-colors"
+          >
+            John Choudhari
+          </a>
         </span>
       </footer>
 
