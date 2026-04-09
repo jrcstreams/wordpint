@@ -50,6 +50,12 @@ export function WordsPanel({
   const [sort, setSort] = useState<SortMode>('random');
   const [showAll, setShowAll] = useState(false);
   const [page, setPage] = useState(0);
+  // Tracks which word the hero is "locked" to. Without this, every
+  // letter that lands in the cup re-sorts the list and flips the hero
+  // to whatever sorted[0] is now — looks like the word is jumping
+  // ahead. We only change selectedWordKey when the user hits Next Word
+  // or when the locked word is no longer spellable from the cup.
+  const [selectedWordKey, setSelectedWordKey] = useState<string | null>(null);
 
   const sorted = useMemo(() => {
     if (results.length === 0) return results;
@@ -82,7 +88,34 @@ export function WordsPanel({
     setPage(0);
   }, [sort]);
 
-  const heroWord = sorted[0] ?? null;
+  // The displayed hero word: prefer the locked selection if it's still
+  // valid; otherwise fall back to sorted[0].
+  const heroWord = useMemo<WordResult | null>(() => {
+    if (sorted.length === 0) return null;
+    if (selectedWordKey) {
+      const found = sorted.find((w) => w.word === selectedWordKey);
+      if (found) return found;
+    }
+    return sorted[0];
+  }, [sorted, selectedWordKey]);
+
+  // Keep selectedWordKey in sync with whatever the hero is currently
+  // displaying. This way, the next time results change, the lock holds.
+  useEffect(() => {
+    if (heroWord && heroWord.word !== selectedWordKey) {
+      setSelectedWordKey(heroWord.word);
+    } else if (!heroWord && selectedWordKey !== null) {
+      setSelectedWordKey(null);
+    }
+  }, [heroWord, selectedWordKey]);
+
+  const handleNext = () => {
+    if (!heroWord) return;
+    onPick(heroWord.word);
+    // Clear the lock so the next render picks the new sorted[0] from
+    // the post-consumption results.
+    setSelectedWordKey(null);
+  };
 
   return (
     <div className="relative flex-1 min-h-0 flex flex-col">
@@ -110,7 +143,7 @@ export function WordsPanel({
           sort={sort}
           setSort={setSort}
           letterCount={letterCount}
-          onNext={() => onPick(heroWord!.word)}
+          onNext={handleNext}
           onShowAll={() => setShowAll(true)}
           onEmptyCup={onEmptyCup}
         />
