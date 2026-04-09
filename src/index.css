@@ -76,39 +76,6 @@ body {
   animation: tap-tilt 0.22s ease-out forwards;
 }
 
-@keyframes stream-flow {
-  0% {
-    transform: scaleY(0.3);
-    opacity: 0;
-  }
-  100% {
-    transform: scaleY(1);
-    opacity: 0.75;
-  }
-}
-
-.tap-pouring .tap-stream {
-  transform-origin: top center;
-  animation: stream-flow 0.18s ease-out forwards;
-}
-
-@keyframes drip-pulse {
-  0%,
-  100% {
-    opacity: 0.4;
-    transform: translateY(0);
-  }
-  50% {
-    opacity: 0.85;
-    transform: translateY(0.5px);
-  }
-}
-
-.tap-drip {
-  transform-origin: center;
-  animation: drip-pulse 2.4s ease-in-out infinite;
-}
-
 /* Hint glow around the paddle (only before first pour) */
 @keyframes hint-pulse {
   0%,

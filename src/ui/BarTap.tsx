@@ -117,20 +117,49 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               strokeWidth="0.7"
             />
 
-            {/* Top decorative rule */}
+            {/* Pint glass graphic — the brand emblem */}
+            <g>
+              {/* Foam bubbles on top */}
+              <circle cx="102" cy="22" r="2.2" fill="#1a1a1a" />
+              <circle cx="110" cy="20" r="2.6" fill="#1a1a1a" />
+              <circle cx="118" cy="22" r="2.2" fill="#1a1a1a" />
+              {/* Glass outline (conical pint shape) */}
+              <path
+                d="M 95 26 L 125 26 L 122 44 L 98 44 Z"
+                fill="none"
+                stroke="#1a1a1a"
+                strokeWidth="1.8"
+                strokeLinejoin="round"
+              />
+              {/* Beer fill (lower portion) */}
+              <path
+                d="M 99 34 L 121 34 L 119 42 L 101 42 Z"
+                fill="#1a1a1a"
+              />
+            </g>
+
+            {/* Decorative flanking lines under the emblem */}
             <line
-              x1="74"
-              y1="32"
-              x2="146"
-              y2="32"
+              x1="58"
+              y1="56"
+              x2="92"
+              y2="56"
               stroke="#1a1a1a"
-              strokeWidth="1.6"
+              strokeWidth="0.9"
+            />
+            <line
+              x1="128"
+              y1="56"
+              x2="162"
+              y2="56"
+              stroke="#1a1a1a"
+              strokeWidth="0.9"
             />
 
             {/* CLICK */}
             <text
               x="110"
-              y="68"
+              y="84"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
               fontSize="30"
@@ -144,7 +173,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             {/* TO */}
             <text
               x="110"
-              y="104"
+              y="116"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
               fontSize="30"
@@ -158,7 +187,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             {/* POUR */}
             <text
               x="110"
-              y="140"
+              y="148"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
               fontSize="30"
@@ -168,16 +197,6 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             >
               POUR
             </text>
-
-            {/* Bottom decorative rule */}
-            <line
-              x1="74"
-              y1="154"
-              x2="146"
-              y2="154"
-              stroke="#1a1a1a"
-              strokeWidth="1.6"
-            />
 
             {/* Lower neck connecting to body collar */}
             <rect x="103" y="172" width="14" height="6" fill="#1a1a1a" />
@@ -204,30 +223,6 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
           <path d="M92,246 L88,262 L132,262 L128,246 Z" fill="#1a1a1a" />
           <rect x="92" y="262" width="36" height="6" rx="1" fill="#1a1a1a" />
           <ellipse cx="110" cy="270" rx="14" ry="2" fill="#3a3328" />
-
-          {/* Idle drip */}
-          {!pouring && (
-            <circle
-              className="tap-drip"
-              cx="110"
-              cy="272"
-              r="2.2"
-              fill="#e8a838"
-              opacity="0.55"
-            />
-          )}
-
-          {/* Pour stream */}
-          <rect
-            className="tap-stream"
-            x="106"
-            y="274"
-            width="9"
-            height="36"
-            rx="3"
-            fill="#e8a838"
-            opacity="0"
-          />
         </svg>
 
         {/* Hint glow ring around the paddle (only before first pour) */}

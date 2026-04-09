@@ -70,13 +70,13 @@ export default function App() {
   return (
     <div className="flex flex-col h-full bg-paper text-ink">
       {/* ============ TOP NAV ============ */}
-      <header className="shrink-0 border-b-2 border-ink bg-paper px-4 sm:px-6 py-3 sm:py-3.5 flex items-end justify-between gap-3 sm:gap-4">
-        <div className="flex items-baseline gap-3 sm:gap-4 min-w-0">
+      <header className="shrink-0 border-b-2 border-ink bg-paper px-4 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between gap-3 sm:gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <h1 className="text-xl sm:text-2xl md:text-[1.6rem] font-black tracking-tight text-ink leading-none whitespace-nowrap">
             Pint of Words
           </h1>
-          <p className="hidden sm:block text-xs sm:text-[13px] text-ink-mute leading-none whitespace-nowrap">
-            pour a pint, learn a word
+          <p className="hidden sm:block text-xs sm:text-[13px] font-medium text-ink-mute leading-none whitespace-nowrap">
+            Pour a Pint, Learn a Word
           </p>
         </div>
         <a

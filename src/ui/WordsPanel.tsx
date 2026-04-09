@@ -9,7 +9,7 @@ interface WordsPanelProps {
   onEmptyCup: () => void;
 }
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 4;
 
 export type SortMode = 'random' | 'longest' | 'shortest' | 'alpha';
 
@@ -104,7 +104,7 @@ export function WordsPanel({
         onEmptyCup={onEmptyCup}
       />
 
-      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
+      <div className="flex-1 min-h-0 flex flex-col">
         {sorted.length === 0 ? (
           <EmptyState
             letterCount={letterCount}
@@ -310,20 +310,21 @@ function GridView({
   onPick: (word: string) => void;
 }) {
   return (
-    <div className="flex-1 flex flex-col px-4 sm:px-6 py-3 sm:py-4">
-      <ul className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 flex-1">
+    <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-6 py-3 sm:py-3.5">
+      {/* Cards: fill the available space, never scroll */}
+      <ul className="flex-1 min-h-0 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
         {visible.map((r) => (
-          <li key={r.word}>
+          <li key={r.word} className="min-h-0">
             <button
               type="button"
               onClick={() => onPick(r.word)}
-              className="group w-full h-full text-left bg-paper border border-ink/60 rounded-sm shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] transition-all px-2.5 py-2"
+              className="group w-full h-full text-left bg-paper border border-ink/60 rounded-sm shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] transition-all px-3 py-2.5 overflow-hidden flex flex-col"
               aria-label={`Use the word ${r.word}`}
             >
-              <div className="font-display text-base sm:text-lg font-black tracking-tight text-ink lowercase leading-none">
+              <div className="font-display text-lg sm:text-xl font-black tracking-tight text-ink lowercase leading-none shrink-0">
                 {r.word}
               </div>
-              <p className="mt-1 font-body text-[11px] sm:text-xs text-ink-soft leading-snug line-clamp-2">
+              <p className="mt-1.5 font-body text-xs sm:text-sm text-ink-soft leading-snug line-clamp-3 flex-1 min-h-0">
                 {r.definition || '— no definition —'}
               </p>
             </button>
@@ -331,8 +332,9 @@ function GridView({
         ))}
       </ul>
 
+      {/* Pagination — pinned at the bottom, always visible */}
       {pageCount > 1 && (
-        <div className="mt-3 flex items-center justify-center gap-2 text-[11px] font-semibold">
+        <div className="mt-3 shrink-0 flex items-center justify-center gap-2 text-[11px] font-semibold">
           <button
             type="button"
             className="px-3 py-1.5 bg-ink/[0.04] border border-ink/25 hover:bg-ink hover:text-paper rounded-full transition disabled:opacity-30 disabled:hover:bg-ink/[0.04] disabled:hover:text-ink"
@@ -342,7 +344,7 @@ function GridView({
           >
             ‹ Prev
           </button>
-          <span className="text-ink-mute tabular-nums text-[11px] px-1">
+          <span className="text-ink-mute tabular-nums px-1">
             {page + 1} / {pageCount}
           </span>
           <button
