@@ -92,26 +92,38 @@ export function WordsPanel({
     setSelectedWordKey(null);
   }, [sort]);
 
-  // The displayed hero word: prefer the locked selection if it's still
-  // valid; otherwise fall back to sorted[0].
+  // The displayed hero word.
+  //
+  // - Non-random sorts (longest / shortest / A→Z) always show sorted[0]
+  //   LIVE. As the user keeps pouring letters, the displayed word
+  //   updates to the new top of the sort. This is what the user wants
+  //   from a sort: a current view of the cup, not a frozen snapshot.
+  //
+  // - Random uses a stable lock (selectedWordKey) so the displayed
+  //   word doesn't flicker every time a new letter lands in the cup.
+  //   The lock falls back to sorted[0] if the locked word is no
+  //   longer spellable.
   const heroWord = useMemo<WordResult | null>(() => {
     if (sorted.length === 0) return null;
+    if (sort !== 'random') return sorted[0];
     if (selectedWordKey) {
       const found = sorted.find((w) => w.word === selectedWordKey);
       if (found) return found;
     }
     return sorted[0];
-  }, [sorted, selectedWordKey]);
+  }, [sorted, selectedWordKey, sort]);
 
   // Keep selectedWordKey in sync with whatever the hero is currently
-  // displaying. This way, the next time results change, the lock holds.
+  // displaying — but only in random mode. Non-random modes don't use
+  // the lock at all.
   useEffect(() => {
+    if (sort !== 'random') return;
     if (heroWord && heroWord.word !== selectedWordKey) {
       setSelectedWordKey(heroWord.word);
     } else if (!heroWord && selectedWordKey !== null) {
       setSelectedWordKey(null);
     }
-  }, [heroWord, selectedWordKey]);
+  }, [heroWord, selectedWordKey, sort]);
 
   const handleNext = () => {
     if (!heroWord) return;
