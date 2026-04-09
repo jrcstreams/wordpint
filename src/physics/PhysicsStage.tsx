@@ -67,9 +67,19 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
         glassH,
       );
 
+      // The sensor uses a tighter AABB than the visual glass interior so
+      // letters that are bouncing OUT over the rim get uncounted *before*
+      // they visually leave (instead of waiting for the floor-fade).
+      const sensorInterior = {
+        x: glass.interior.x + 6,
+        y: glass.interior.y + 14,
+        width: glass.interior.width - 12,
+        height: glass.interior.height - 18,
+      };
+
       const sensors = new Sensors({
         engine: world.engine,
-        interior: glass.interior,
+        interior: sensorInterior,
         worldHeight: world.height,
         maxActive: MAX_ACTIVE_LETTERS,
         events: {

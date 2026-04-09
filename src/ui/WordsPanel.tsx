@@ -252,43 +252,29 @@ function HeroView({
   return (
     <div
       key={word.word}
-      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-5 py-4 sm:py-6 max-w-2xl mx-auto w-full"
+      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-5 py-3 sm:py-4 max-w-xl mx-auto w-full"
     >
       {/* Featured word */}
-      <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(2rem,5.2vw,3.25rem)]">
+      <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.75rem,4.5vw,2.75rem)]">
         {word.word}
       </h3>
 
-      {/* Definition with ornamental serif quotes */}
-      <div className="relative mt-3 sm:mt-4 max-w-md px-5">
-        <span
-          aria-hidden="true"
-          className="absolute left-0 -top-2 sm:-top-3 font-display text-2xl sm:text-3xl text-ink/30 leading-none select-none"
-        >
-          “
-        </span>
-        <p className="font-body italic text-[15px] sm:text-base leading-snug text-ink-soft">
-          {word.definition || 'no definition on file'}
-        </p>
-        <span
-          aria-hidden="true"
-          className="absolute right-0 -bottom-4 font-display text-2xl sm:text-3xl text-ink/30 leading-none select-none"
-        >
-          ”
-        </span>
-      </div>
+      {/* Definition — Garamond regular, no italic */}
+      <p className="mt-2 sm:mt-3 max-w-md font-body text-sm sm:text-[15px] leading-snug text-ink-soft">
+        {word.definition || 'no definition on file'}
+      </p>
 
-      {/* CTA — compact, sans, semibold */}
+      {/* CTA — compact */}
       <button
         type="button"
         onClick={onNext}
-        className="mt-5 sm:mt-7 text-xs sm:text-[13px] font-semibold uppercase tracking-[0.14em] px-5 py-2.5 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[2px] active:translate-y-[2px] rounded-sm"
+        className="mt-4 sm:mt-5 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-sm"
       >
         Next word →
       </button>
 
       {/* Footer line */}
-      <p className="mt-3 sm:mt-4 text-[11px] text-ink-mute">
+      <p className="mt-3 text-[11px] text-ink-mute">
         {totalCount > 1 ? (
           <>
             {totalCount - 1} more available ·{' '}
@@ -337,7 +323,7 @@ function GridView({
               <div className="font-display text-base sm:text-lg font-black tracking-tight text-ink lowercase leading-none">
                 {r.word}
               </div>
-              <p className="mt-1 font-body italic text-[11px] sm:text-xs text-ink-soft leading-snug line-clamp-2">
+              <p className="mt-1 font-body text-[11px] sm:text-xs text-ink-soft leading-snug line-clamp-2">
                 {r.definition || '— no definition —'}
               </p>
             </button>
@@ -398,7 +384,7 @@ function EmptyState({
         <p className="font-display text-2xl sm:text-3xl font-black text-ink leading-none">
           Pour yourself a pint.
         </p>
-        <p className="font-body italic text-sm sm:text-base text-ink-mute pulse-up">
+        <p className="text-sm text-ink-mute pulse-up">
           ↑ pull the tap above
         </p>
       </div>
@@ -409,7 +395,7 @@ function EmptyState({
       <p className="font-display text-xl sm:text-2xl font-black text-ink leading-none">
         No words yet.
       </p>
-      <p className="font-body italic text-sm text-ink-mute pulse-up">
+      <p className="text-sm text-ink-mute pulse-up">
         ↑ pour a few more letters
       </p>
     </div>

@@ -122,7 +122,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               y="34"
               textAnchor="middle"
               fontFamily="Georgia, serif"
-              fontSize="16"
+              fontSize="14"
               fill="#1a1a1a"
             >
               ✦
@@ -131,10 +131,10 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             {/* CLICK */}
             <text
               x="110"
-              y="68"
+              y="64"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
-              fontSize="30"
+              fontSize="28"
               fontWeight="900"
               fill="#1a1a1a"
               letterSpacing="1.5"
@@ -142,42 +142,27 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               CLICK
             </text>
 
-            {/* "to" with flanking rules */}
-            <line
-              x1="60"
-              y1="83"
-              x2="92"
-              y2="83"
-              stroke="#1a1a1a"
-              strokeWidth="0.9"
-            />
+            {/* TO (same style, no italic, no rules) */}
             <text
               x="110"
-              y="89"
+              y="94"
               textAnchor="middle"
-              fontFamily='"EB Garamond", Georgia, serif'
-              fontSize="17"
-              fontStyle="italic"
+              fontFamily='"Playfair Display", Georgia, serif'
+              fontSize="28"
+              fontWeight="900"
               fill="#1a1a1a"
+              letterSpacing="1.5"
             >
-              to
+              TO
             </text>
-            <line
-              x1="128"
-              y1="83"
-              x2="160"
-              y2="83"
-              stroke="#1a1a1a"
-              strokeWidth="0.9"
-            />
 
             {/* POUR */}
             <text
               x="110"
-              y="121"
+              y="124"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
-              fontSize="30"
+              fontSize="28"
               fontWeight="900"
               fill="#1a1a1a"
               letterSpacing="1.5"
@@ -188,10 +173,10 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             {/* Bottom star */}
             <text
               x="110"
-              y="142"
+              y="144"
               textAnchor="middle"
               fontFamily="Georgia, serif"
-              fontSize="16"
+              fontSize="14"
               fill="#1a1a1a"
             >
               ✦

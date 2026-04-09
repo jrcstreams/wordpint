@@ -51,23 +51,9 @@ export function WordModal({ word, definition, onClose }: WordModalProps) {
           {word}
         </h3>
 
-        <div className="relative mt-4 sm:mt-5 pl-5 pr-5">
-          <span
-            aria-hidden="true"
-            className="absolute left-0 -top-2 font-display text-3xl text-ink/30 leading-none select-none"
-          >
-            “
-          </span>
-          <p className="font-body italic text-base sm:text-lg text-ink-soft leading-snug">
-            {definition || 'no definition on file'}
-          </p>
-          <span
-            aria-hidden="true"
-            className="absolute right-0 -bottom-3 font-display text-3xl text-ink/30 leading-none select-none"
-          >
-            ”
-          </span>
-        </div>
+        <p className="mt-3 sm:mt-4 font-body text-base sm:text-lg text-ink-soft leading-snug">
+          {definition || 'no definition on file'}
+        </p>
       </div>
     </div>
   );
