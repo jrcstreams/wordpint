@@ -9,12 +9,12 @@ interface BarTapProps {
 }
 
 /**
- * A monochrome draft tap with a branded paddle. The paddle is the brand
- * placement: a pint glass emblem at the top, then the stacked
- * HOLD / TO / POUR wordmark, all framed in a double-bordered cream inset.
+ * A monochrome draft tap with a minimal branded paddle. The paddle has
+ * just three things: the cream inset, a thin inner frame, and the
+ * stacked HOLD / TO / POUR wordmark with generous breathing room.
  *
- * Press and hold the assembly to pour; the entire branded head pivots
- * forward at the body collar like a real beer tap.
+ * Press and hold the assembly to pour; the head pivots forward at the
+ * body collar like a real beer tap.
  */
 export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -51,8 +51,8 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
     [onStop, pouring],
   );
 
-  // viewBox is 220×304; aspect drives the wrapper width.
-  const aspect = 220 / 304;
+  // viewBox is 220×270; aspect drives the wrapper width.
+  const aspect = 220 / 270;
   const svgWidth = tapHeight * aspect;
 
   return (
@@ -74,7 +74,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
         } ${showHint ? 'tap-hint' : ''}`}
       >
         <svg
-          viewBox="0 0 220 304"
+          viewBox="0 0 220 270"
           width="100%"
           height="100%"
           fill="none"
@@ -85,84 +85,48 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
           <g className="tap-handle">
             {/* Outer paddle (black) */}
             <rect
-              x="28"
+              x="30"
               y="2"
-              width="164"
-              height="184"
-              rx="14"
+              width="160"
+              height="158"
+              rx="12"
               fill="#1a1a1a"
             />
 
             {/* Cream inset */}
             <rect
-              x="36"
+              x="38"
               y="10"
-              width="148"
-              height="168"
-              rx="7"
+              width="144"
+              height="142"
+              rx="6"
               fill="#fbf7ec"
               stroke="#1a1a1a"
-              strokeWidth="1.8"
+              strokeWidth="1.6"
             />
 
             {/* Inner thin frame ornament */}
             <rect
-              x="42"
+              x="44"
               y="16"
-              width="136"
-              height="156"
-              rx="4"
+              width="132"
+              height="130"
+              rx="3"
               fill="none"
               stroke="#1a1a1a"
-              strokeWidth="0.7"
-            />
-
-            {/* Pint glass graphic — the brand emblem */}
-            <g>
-              <circle cx="102" cy="24" r="2.2" fill="#1a1a1a" />
-              <circle cx="110" cy="22" r="2.6" fill="#1a1a1a" />
-              <circle cx="118" cy="24" r="2.2" fill="#1a1a1a" />
-              <path
-                d="M 95 28 L 125 28 L 122 46 L 98 46 Z"
-                fill="none"
-                stroke="#1a1a1a"
-                strokeWidth="1.8"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M 99 36 L 121 36 L 119 44 L 101 44 Z"
-                fill="#1a1a1a"
-              />
-            </g>
-
-            {/* Decorative flanking lines under the emblem */}
-            <line
-              x1="56"
-              y1="58"
-              x2="92"
-              y2="58"
-              stroke="#1a1a1a"
-              strokeWidth="0.9"
-            />
-            <line
-              x1="128"
-              y1="58"
-              x2="164"
-              y2="58"
-              stroke="#1a1a1a"
-              strokeWidth="0.9"
+              strokeWidth="0.6"
             />
 
             {/* HOLD */}
             <text
               x="110"
-              y="92"
+              y="50"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
-              fontSize="32"
+              fontSize="26"
               fontWeight="900"
               fill="#1a1a1a"
-              letterSpacing="2.5"
+              letterSpacing="2"
             >
               HOLD
             </text>
@@ -170,13 +134,13 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             {/* TO */}
             <text
               x="110"
-              y="128"
+              y="86"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
-              fontSize="32"
+              fontSize="26"
               fontWeight="900"
               fill="#1a1a1a"
-              letterSpacing="2.5"
+              letterSpacing="2"
             >
               TO
             </text>
@@ -184,49 +148,49 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
             {/* POUR */}
             <text
               x="110"
-              y="164"
+              y="122"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
-              fontSize="32"
+              fontSize="26"
               fontWeight="900"
               fill="#1a1a1a"
-              letterSpacing="2.5"
+              letterSpacing="2"
             >
               POUR
             </text>
 
             {/* Lower neck connecting to body collar */}
-            <rect x="103" y="186" width="14" height="6" fill="#1a1a1a" />
+            <rect x="103" y="160" width="14" height="6" fill="#1a1a1a" />
           </g>
 
           {/* ============ TAP BODY (static) ============ */}
           {/* Mounting collar */}
-          <rect x="86" y="192" width="48" height="12" rx="2" fill="#1a1a1a" />
+          <rect x="86" y="166" width="48" height="12" rx="2" fill="#1a1a1a" />
 
           {/* Chrome cylinder body */}
-          <rect x="92" y="204" width="36" height="56" rx="6" fill="#1a1a1a" />
+          <rect x="92" y="178" width="36" height="56" rx="6" fill="#1a1a1a" />
           <rect
             x="95"
-            y="208"
+            y="182"
             width="5"
             height="48"
             rx="2"
             fill="rgba(255,255,255,0.2)"
           />
-          <rect x="92" y="216" width="36" height="2" fill="#fbf7ec" />
-          <rect x="92" y="246" width="36" height="2" fill="#fbf7ec" />
+          <rect x="92" y="190" width="36" height="2" fill="#fbf7ec" />
+          <rect x="92" y="220" width="36" height="2" fill="#fbf7ec" />
 
           {/* ============ SPOUT ============ */}
-          <path d="M92,260 L88,276 L132,276 L128,260 Z" fill="#1a1a1a" />
-          <rect x="92" y="276" width="36" height="6" rx="1" fill="#1a1a1a" />
-          <ellipse cx="110" cy="284" rx="14" ry="2" fill="#3a3328" />
+          <path d="M92,234 L88,250 L132,250 L128,234 Z" fill="#1a1a1a" />
+          <rect x="92" y="250" width="36" height="6" rx="1" fill="#1a1a1a" />
+          <ellipse cx="110" cy="258" rx="14" ry="2" fill="#3a3328" />
         </svg>
 
         {/* Hint glow ring around the paddle (only before first pour) */}
         {showHint && (
           <span
             aria-hidden="true"
-            className="hint-glow absolute left-1/2 top-[30%] -translate-x-1/2 -translate-y-1/2 w-[95%] h-[58%] rounded-full pointer-events-none"
+            className="hint-glow absolute left-1/2 top-[30%] -translate-x-1/2 -translate-y-1/2 w-[95%] h-[55%] rounded-full pointer-events-none"
           />
         )}
       </button>

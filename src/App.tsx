@@ -8,9 +8,10 @@ import { WordsPanel } from './ui/WordsPanel';
 import { HistoryStrip } from './ui/HistoryStrip';
 import { DictionaryBanner } from './ui/DictionaryBanner';
 import { WordModal } from './ui/WordModal';
+import { SectionDivider } from './ui/SectionDivider';
 import type { WordResult } from './words/types';
 
-const GITHUB_URL = 'https://github.com/johnchoudhari/pint-of-words';
+const GITHUB_URL = 'https://github.com/johnchoudhari/wordpint';
 
 export default function App() {
   const stageRef = useRef<PhysicsStageHandle>(null);
@@ -70,10 +71,10 @@ export default function App() {
   return (
     <div className="flex flex-col h-full bg-paper text-ink">
       {/* ============ TOP NAV ============ */}
-      <header className="shrink-0 border-b-2 border-ink bg-paper px-4 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between gap-3 sm:gap-4">
-        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-          <h1 className="text-xl sm:text-2xl md:text-[1.6rem] font-black tracking-tight text-ink leading-none whitespace-nowrap">
-            Pint of Words
+      <header className="shrink-0 border-b-2 border-ink bg-paper px-4 sm:px-6 py-3 sm:py-3.5 flex items-baseline justify-between gap-3 sm:gap-4">
+        <div className="flex items-baseline gap-3 sm:gap-4 min-w-0">
+          <h1 className="text-2xl sm:text-3xl md:text-[2rem] font-black tracking-tight text-ink leading-none whitespace-nowrap">
+            WordPint
           </h1>
           <p className="hidden sm:block text-xs sm:text-[13px] font-medium text-ink-mute leading-none whitespace-nowrap">
             Pour a Pint, Learn a Word
@@ -84,7 +85,7 @@ export default function App() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="View on GitHub"
-          className="shrink-0 text-ink hover:text-ink-mute transition-colors"
+          className="shrink-0 self-center text-ink hover:text-ink-mute transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -110,8 +111,9 @@ export default function App() {
         <DictionaryBanner status={dictionaryStatus} onRetry={loadDictionary} />
       </div>
 
-      {/* ============ WORDS + TAB ============ */}
-      <div className="flex-1 min-h-0 flex flex-col">
+      {/* ============ WORDS + TAB (seamless flow) ============ */}
+      <div className="flex-1 min-h-0 flex flex-col bg-paper-grain">
+        <SectionDivider>Words on Tap</SectionDivider>
         <WordsPanel
           results={currentResults}
           letterCount={lettersInGlass.size}
@@ -119,6 +121,7 @@ export default function App() {
           onPick={onPickWord}
           onEmptyCup={onEmptyCup}
         />
+        <SectionDivider>Running Tab</SectionDivider>
         <HistoryStrip history={history} onWordClick={setModalWord} />
       </div>
 

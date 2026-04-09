@@ -85,49 +85,39 @@ export function WordsPanel({
   const heroWord = sorted[0] ?? null;
 
   return (
-    <section className="relative flex-1 min-h-0 bg-paper-grain flex flex-col">
-      {/* Section label header — just the label */}
-      <header className="shrink-0 px-4 sm:px-6 pt-3 pb-2 border-b border-ink/20">
-        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-ink-mute">
-          Words on Tap
-        </span>
-      </header>
-
-      {/* Body */}
-      <div className="flex-1 min-h-0 flex flex-col">
-        {sorted.length === 0 ? (
-          <EmptyState
-            letterCount={letterCount}
-            dictionaryReady={dictionaryReady}
-          />
-        ) : showAll ? (
-          <GridView
-            visible={sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)}
-            page={page}
-            pageCount={pageCount}
-            setPage={setPage}
-            sort={sort}
-            setSort={setSort}
-            letterCount={letterCount}
-            totalCount={sorted.length}
-            onPick={onPick}
-            onShowSingle={() => setShowAll(false)}
-            onEmptyCup={onEmptyCup}
-          />
-        ) : (
-          <HeroView
-            word={heroWord!}
-            totalCount={sorted.length}
-            sort={sort}
-            setSort={setSort}
-            letterCount={letterCount}
-            onNext={() => onPick(heroWord!.word)}
-            onShowAll={() => setShowAll(true)}
-            onEmptyCup={onEmptyCup}
-          />
-        )}
-      </div>
-    </section>
+    <div className="relative flex-1 min-h-0 bg-paper-grain flex flex-col">
+      {sorted.length === 0 ? (
+        <EmptyState
+          letterCount={letterCount}
+          dictionaryReady={dictionaryReady}
+        />
+      ) : showAll ? (
+        <GridView
+          visible={sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)}
+          page={page}
+          pageCount={pageCount}
+          setPage={setPage}
+          sort={sort}
+          setSort={setSort}
+          letterCount={letterCount}
+          totalCount={sorted.length}
+          onPick={onPick}
+          onShowSingle={() => setShowAll(false)}
+          onEmptyCup={onEmptyCup}
+        />
+      ) : (
+        <HeroView
+          word={heroWord!}
+          totalCount={sorted.length}
+          sort={sort}
+          setSort={setSort}
+          letterCount={letterCount}
+          onNext={() => onPick(heroWord!.word)}
+          onShowAll={() => setShowAll(true)}
+          onEmptyCup={onEmptyCup}
+        />
+      )}
+    </div>
   );
 }
 
@@ -167,9 +157,13 @@ function HeroView({
         {word.definition || 'no definition on file'}
       </p>
 
-      {/* Control row — directly beneath the word */}
-      <div className="mt-4 sm:mt-5 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+      {/* Primary CTA on its own row */}
+      <div className="mt-4 sm:mt-5">
         <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
+      </div>
+
+      {/* Secondary controls on the second row */}
+      <div className="mt-2 sm:mt-2.5 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
         <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
         <SortPill value={sort} onChange={setSort} />
         {letterCount > 0 && (
@@ -179,9 +173,10 @@ function HeroView({
         )}
       </div>
 
-      {/* Total count — below controls */}
-      <p className="mt-2.5 text-[11px] text-ink-mute">
-        {totalCount} word{totalCount === 1 ? '' : 's'} on offer
+      {/* Total count — bigger, more prominent */}
+      <p className="mt-3 sm:mt-4 text-sm sm:text-base text-ink-soft">
+        <span className="font-display font-black text-ink">{totalCount}</span>{' '}
+        word{totalCount === 1 ? '' : 's'} on offer
       </p>
     </div>
   );
@@ -255,8 +250,9 @@ function GridView({
             />
           )}
         </div>
-        <p className="text-[11px] text-ink-mute">
-          {totalCount} word{totalCount === 1 ? '' : 's'} on offer
+        <p className="text-sm sm:text-base text-ink-soft">
+          <span className="font-display font-black text-ink">{totalCount}</span>{' '}
+          word{totalCount === 1 ? '' : 's'} on offer
         </p>
       </div>
     </div>
@@ -277,7 +273,7 @@ function PrimaryButton({
     <button
       type="button"
       onClick={onClick}
-      className="text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-md"
+      className="text-sm font-bold uppercase tracking-[0.14em] px-7 sm:px-8 py-2.5 sm:py-3 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[1px] active:translate-y-[1px] rounded-md"
       {...rest}
     >
       {children}
