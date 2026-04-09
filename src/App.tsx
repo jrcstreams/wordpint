@@ -119,9 +119,9 @@ export default function App() {
       {/* ============ WORDS + TAB (seamless flow) ============ */}
       <div className="flex-1 min-h-0 flex flex-col bg-paper-grain">
         {/* How it works — concise numbered steps between the cup and
-            the words section. Visible on all viewports. Container is
-            centered, list flex-wraps cleanly when needed. */}
-        <div className="shrink-0 px-3 sm:px-6 pt-2 pb-2 sm:pt-3 sm:pb-3">
+            the words section. Hidden on mobile to free up panel space
+            for the hero card and the running tab. */}
+        <div className="hidden sm:block shrink-0 px-3 sm:px-6 pt-2 pb-2 sm:pt-3 sm:pb-3">
           <ol className="text-[11px] sm:text-[13px] text-ink-mute leading-snug max-w-xl mx-auto flex items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1 flex-wrap">
             <li>
               <span className="font-semibold text-ink-soft">1.</span> Pour

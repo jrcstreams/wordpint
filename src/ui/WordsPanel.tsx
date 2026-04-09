@@ -134,7 +134,7 @@ export function WordsPanel({
   };
 
   return (
-    <div className="relative flex-1 min-h-0 flex flex-col">
+    <div className="relative flex-1 min-h-0 flex flex-col overflow-hidden">
       {sorted.length === 0 ? (
         <EmptyState
           letterCount={letterCount}
