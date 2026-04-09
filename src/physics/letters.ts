@@ -27,9 +27,11 @@ export class ScrabbleBag {
   }
 }
 
-const TILE_SIZE = 26;
-// Render at 2x for crisp glyphs on retina, then downscale via sprite scale.
-const TEX_SCALE = 2;
+// Tile size — dropped from 26 to 19 to roughly double the cup capacity
+// (area scales with side², so 19² / 26² ≈ 0.53). The texture is rendered
+// at 3× internally so the small glyph stays crisp on retina.
+const TILE_SIZE = 19;
+const TEX_SCALE = 3;
 const textureCache = new Map<string, string>();
 
 /**
@@ -47,7 +49,7 @@ function makeLetterTexture(char: string): string {
   const ctx = c.getContext('2d')!;
   ctx.scale(TEX_SCALE, TEX_SCALE);
 
-  const r = 5;
+  const r = 3.5;
   const inset = 1;
   const w = TILE_SIZE - inset * 2;
   const h = TILE_SIZE - inset * 2;
@@ -55,8 +57,8 @@ function makeLetterTexture(char: string): string {
   // Outer drop shadow (subtle, baked)
   ctx.save();
   ctx.shadowColor = 'rgba(20, 12, 4, 0.32)';
-  ctx.shadowBlur = 3;
-  ctx.shadowOffsetY = 1.5;
+  ctx.shadowBlur = 2.4;
+  ctx.shadowOffsetY = 1;
 
   // Tile body — warm ivory with vertical light gradient
   const body = ctx.createLinearGradient(0, inset, 0, inset + h);
@@ -68,16 +70,16 @@ function makeLetterTexture(char: string): string {
   ctx.fill();
   ctx.restore();
 
-  // Wood-grain horizontal lines
+  // Wood-grain horizontal lines (sparser at this size)
   ctx.save();
   roundedRect(ctx, inset, inset, w, h, r);
   ctx.clip();
-  ctx.strokeStyle = 'rgba(90, 56, 24, 0.09)';
-  ctx.lineWidth = 0.5;
-  for (let y = inset + 3; y < inset + h - 1; y += 2.4) {
+  ctx.strokeStyle = 'rgba(90, 56, 24, 0.08)';
+  ctx.lineWidth = 0.4;
+  for (let y = inset + 2.5; y < inset + h - 0.5; y += 2) {
     ctx.beginPath();
-    ctx.moveTo(inset + 1, y + Math.sin(y * 0.7) * 0.25);
-    ctx.lineTo(inset + w - 1, y + Math.cos(y * 0.6) * 0.25);
+    ctx.moveTo(inset + 0.5, y + Math.sin(y * 0.7) * 0.2);
+    ctx.lineTo(inset + w - 0.5, y + Math.cos(y * 0.6) * 0.2);
     ctx.stroke();
   }
   ctx.restore();
@@ -87,36 +89,36 @@ function makeLetterTexture(char: string): string {
   roundedRect(ctx, inset, inset, w, h, r);
   ctx.clip();
 
-  const topGrad = ctx.createLinearGradient(0, inset, 0, inset + 4);
+  const topGrad = ctx.createLinearGradient(0, inset, 0, inset + 3);
   topGrad.addColorStop(0, 'rgba(255, 250, 230, 0.85)');
   topGrad.addColorStop(1, 'rgba(255, 250, 230, 0)');
   ctx.fillStyle = topGrad;
-  ctx.fillRect(inset, inset, w, 4);
+  ctx.fillRect(inset, inset, w, 3);
 
-  const botGrad = ctx.createLinearGradient(0, inset + h - 5, 0, inset + h);
+  const botGrad = ctx.createLinearGradient(0, inset + h - 4, 0, inset + h);
   botGrad.addColorStop(0, 'rgba(60, 36, 12, 0)');
-  botGrad.addColorStop(1, 'rgba(60, 36, 12, 0.35)');
+  botGrad.addColorStop(1, 'rgba(60, 36, 12, 0.32)');
   ctx.fillStyle = botGrad;
-  ctx.fillRect(inset, inset + h - 5, w, 5);
+  ctx.fillRect(inset, inset + h - 4, w, 4);
   ctx.restore();
 
   // Crisp ink border
-  ctx.lineWidth = 1.2;
+  ctx.lineWidth = 1;
   ctx.strokeStyle = '#1a1a1a';
   roundedRect(ctx, inset, inset, w, h, r);
   ctx.stroke();
 
-  // Embossed glyph
-  ctx.font = '900 19px "Playfair Display", Georgia, serif';
+  // Embossed glyph (scaled with tile)
+  ctx.font = '900 14px "Playfair Display", Georgia, serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
   const cx = TILE_SIZE / 2;
-  const cy = TILE_SIZE / 2 + 1;
+  const cy = TILE_SIZE / 2 + 0.5;
 
   // Highlight (offset up-left)
-  ctx.fillStyle = 'rgba(255, 250, 230, 0.6)';
-  ctx.fillText(char.toUpperCase(), cx - 0.4, cy - 0.4);
+  ctx.fillStyle = 'rgba(255, 250, 230, 0.55)';
+  ctx.fillText(char.toUpperCase(), cx - 0.3, cy - 0.3);
   // Ink glyph
   ctx.fillStyle = '#1a1a1a';
   ctx.fillText(char.toUpperCase(), cx, cy);
@@ -165,7 +167,7 @@ export function createLetterBody(
     friction: 0.6,
     frictionStatic: 0.65,
     restitution: 0.06,
-    chamfer: { radius: 4 },
+    chamfer: { radius: 3 },
     render: {
       sprite: {
         texture: makeLetterTexture(char),
