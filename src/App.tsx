@@ -117,7 +117,7 @@ export default function App() {
       </div>
 
       {/* ============ WORDS + TAB (seamless flow) ============ */}
-      <div className="flex-1 min-h-0 flex flex-col bg-paper-grain">
+      <div className="flex-1 min-h-0 flex flex-col bg-paper-grain overflow-hidden">
         {/* How it works — concise numbered steps between the cup and
             the words section. Hidden on mobile to free up panel space
             for the hero card and the running tab. */}
@@ -151,10 +151,7 @@ export default function App() {
           onEmptyCup={onEmptyCup}
         />
         {history.length > 0 && (
-          <>
-            <SectionDivider>Running Tab</SectionDivider>
-            <HistoryStrip history={history} onWordClick={setModalWord} />
-          </>
+          <HistoryStrip history={history} onWordClick={setModalWord} />
         )}
       </div>
 
