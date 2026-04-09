@@ -398,23 +398,7 @@ function GridView({
       <ul className="flex-1 min-h-0 overflow-y-auto grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 auto-rows-min content-start">
         {visible.map((r) => (
           <li key={r.word}>
-            <button
-              type="button"
-              onClick={() => onPick(r.word)}
-              className="group w-full min-h-[88px] sm:min-h-[96px] text-left bg-paper border border-ink/60 rounded-sm shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] transition-all px-3 py-2.5 overflow-hidden flex flex-col"
-              aria-label={`Use the word ${r.word}`}
-            >
-              <div
-                className={`font-display text-lg sm:text-xl font-black tracking-tight text-ink leading-none shrink-0 ${
-                  r.display ? '' : 'lowercase'
-                }`}
-              >
-                {displayWord(r)}
-              </div>
-              <p className="mt-1.5 font-body text-xs sm:text-sm text-ink-soft leading-snug line-clamp-3 shrink-0">
-                {r.definitions[0] || '— no definition —'}
-              </p>
-            </button>
+            <GridCard result={r} onPick={onPick} />
           </li>
         ))}
       </ul>
@@ -432,6 +416,91 @@ function GridView({
           <PageNav page={page} pageCount={pageCount} setPage={setPage} />
         )}
       </div>
+    </div>
+  );
+}
+
+/* ============================== Grid card ============================== */
+
+function GridCard({
+  result,
+  onPick,
+}: {
+  result: WordResult;
+  onPick: (word: string) => void;
+}) {
+  // Per-card definition cursor. Persists as the user pages/sorts
+  // because each card is keyed by word — React keeps the same
+  // GridCard mounted, so the user's "I want to read sense 2 of cat"
+  // selection survives until they pick a different word or empty
+  // the cup.
+  const [defIndex, setDefIndex] = useState(0);
+  const senseCount = result.definitions.length;
+  const currentDef =
+    result.definitions[defIndex] ?? result.definitions[0] ?? '';
+  const showSwipe = senseCount > 1;
+
+  const use = () => onPick(result.word);
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={use}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          use();
+        }
+        if (!showSwipe) return;
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          setDefIndex((i) => (i - 1 + senseCount) % senseCount);
+        }
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          setDefIndex((i) => (i + 1) % senseCount);
+        }
+      }}
+      aria-label={`Use the word ${displayWord(result)}`}
+      className="group w-full min-h-[100px] sm:min-h-[108px] text-left bg-paper border border-ink/60 rounded-sm shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] transition-all px-3 py-2.5 overflow-hidden flex flex-col cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+    >
+      <div
+        className={`font-display text-lg sm:text-xl font-black tracking-tight text-ink leading-none shrink-0 ${
+          result.display ? '' : 'lowercase'
+        }`}
+      >
+        {displayWord(result)}
+      </div>
+      <p className="mt-1.5 font-body text-xs sm:text-sm text-ink-soft leading-snug line-clamp-3 flex-1">
+        {currentDef || '— no definition —'}
+      </p>
+      {showSwipe && (
+        <div className="mt-1 -mb-1 -mr-1 flex items-center justify-end gap-0.5 shrink-0">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setDefIndex((i) => (i - 1 + senseCount) % senseCount);
+            }}
+            className="text-ink-mute hover:text-ink hover:bg-ink/5 rounded w-6 h-6 flex items-center justify-center text-base font-bold leading-none transition"
+            aria-label={`Previous definition of ${displayWord(result)}`}
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setDefIndex((i) => (i + 1) % senseCount);
+            }}
+            className="text-ink-mute hover:text-ink hover:bg-ink/5 rounded w-6 h-6 flex items-center justify-center text-base font-bold leading-none transition"
+            aria-label={`Next definition of ${displayWord(result)}`}
+          >
+            ›
+          </button>
+        </div>
+      )}
     </div>
   );
 }
