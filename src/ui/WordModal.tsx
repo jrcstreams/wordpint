@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 interface WordModalProps {
   word: string | null;
   definition: string | null;
+  /** True for proper nouns — display with a leading capital. */
+  proper?: boolean;
   onClose: () => void;
 }
 
@@ -10,7 +12,13 @@ interface WordModalProps {
  * Lightweight modal that shows a word + its definition. Used by the
  * Running Tab so users can revisit any word they've already used.
  */
-export function WordModal({ word, definition, onClose }: WordModalProps) {
+export function WordModal({ word, definition, proper, onClose }: WordModalProps) {
+  const displayedWord = word
+    ? proper
+      ? word.charAt(0).toUpperCase() + word.slice(1)
+      : word
+    : null;
+
   useEffect(() => {
     if (!word) return;
     const onKey = (e: KeyboardEvent) => {
@@ -47,8 +55,12 @@ export function WordModal({ word, definition, onClose }: WordModalProps) {
           ×
         </button>
 
-        <h3 className="font-display text-3xl sm:text-4xl font-black tracking-tight text-ink lowercase leading-[0.9] pr-6">
-          {word}
+        <h3
+          className={`font-display text-3xl sm:text-4xl font-black tracking-tight text-ink leading-[0.9] pr-6 ${
+            proper ? '' : 'lowercase'
+          }`}
+        >
+          {displayedWord}
         </h3>
 
         <p className="mt-3 sm:mt-4 font-body text-base sm:text-lg text-ink-soft leading-snug">

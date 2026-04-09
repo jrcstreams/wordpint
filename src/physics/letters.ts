@@ -27,10 +27,11 @@ export class ScrabbleBag {
   }
 }
 
-// Tile size — dropped from 26 to 19 to roughly double the cup capacity
-// (area scales with side², so 19² / 26² ≈ 0.53). The texture is rendered
-// at 3× internally so the small glyph stays crisp on retina.
-const TILE_SIZE = 19;
+// Tile size — dropped from 26 → 19 → 17 to keep growing cup capacity
+// without changing the bar layout. Area scales with side², so going
+// 19 → 17 fits ~25% more letters in the same glass. The texture is
+// rendered at 3× internally so the small glyph stays crisp on retina.
+const TILE_SIZE = 17;
 const TEX_SCALE = 3;
 const textureCache = new Map<string, string>();
 
@@ -109,7 +110,7 @@ function makeLetterTexture(char: string): string {
   ctx.stroke();
 
   // Embossed glyph (scaled with tile)
-  ctx.font = '900 14px "Playfair Display", Georgia, serif';
+  ctx.font = '900 13px "Playfair Display", Georgia, serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 

@@ -104,6 +104,8 @@ export default function App() {
 
   const modalDefinition =
     modalWord && wordIndex ? wordIndex.definitions[modalWord] ?? null : null;
+  const modalProper =
+    modalWord && wordIndex ? wordIndex.properNouns?.[modalWord] === true : false;
 
   return (
     <div className="flex flex-col h-full bg-paper text-ink">
@@ -230,6 +232,7 @@ export default function App() {
       <WordModal
         word={modalWord}
         definition={modalDefinition}
+        proper={modalProper}
         onClose={() => setModalWord(null)}
       />
     </div>

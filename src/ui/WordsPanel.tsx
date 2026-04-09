@@ -31,6 +31,12 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
   return out;
 }
 
+function displayWord(w: WordResult): string {
+  // Proper nouns (people, places, organizations) get a leading capital;
+  // everything else stays lowercase to match the display style.
+  return w.proper ? w.word.charAt(0).toUpperCase() + w.word.slice(1) : w.word;
+}
+
 function fingerprint(results: WordResult[]): number {
   if (results.length === 0) return 0;
   return (
@@ -199,8 +205,12 @@ function HeroView({
           guarantees no scroll: the layout is sized to always fit. */}
       <div className="flex-1 min-h-0 overflow-hidden px-5 flex flex-col">
         <div className="my-auto text-center w-full max-w-xl mx-auto py-2">
-          <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.4rem,3.8vw,2.125rem)]">
-            {word.word}
+          <h3
+            className={`font-display font-black tracking-tight text-ink leading-[0.9] text-[clamp(1.4rem,3.8vw,2.125rem)] ${
+              word.proper ? '' : 'lowercase'
+            }`}
+          >
+            {displayWord(word)}
           </h3>
           <p className="mt-2 max-w-md mx-auto font-body text-sm sm:text-base leading-snug text-ink-soft line-clamp-2 sm:line-clamp-3 min-h-[40px] sm:min-h-[66px]">
             {word.definition && word.definition.trim().length > 0
@@ -279,8 +289,12 @@ function GridView({
               className="group w-full min-h-[88px] sm:min-h-[96px] text-left bg-paper border border-ink/60 rounded-sm shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] transition-all px-3 py-2.5 overflow-hidden flex flex-col"
               aria-label={`Use the word ${r.word}`}
             >
-              <div className="font-display text-lg sm:text-xl font-black tracking-tight text-ink lowercase leading-none shrink-0">
-                {r.word}
+              <div
+                className={`font-display text-lg sm:text-xl font-black tracking-tight text-ink leading-none shrink-0 ${
+                  r.proper ? '' : 'lowercase'
+                }`}
+              >
+                {displayWord(r)}
               </div>
               <p className="mt-1.5 font-body text-xs sm:text-sm text-ink-soft leading-snug line-clamp-3 shrink-0">
                 {r.definition || '— no definition —'}

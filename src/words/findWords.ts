@@ -40,7 +40,8 @@ export function findWords(
     if (!isSubMultiset(needed, have)) continue;
     for (const word of index.bySignature[sig]) {
       const definition = index.definitions[word] ?? '';
-      results.push({ word, definition });
+      const proper = index.properNouns?.[word] === true;
+      results.push({ word, definition, proper });
     }
   }
 
