@@ -85,7 +85,7 @@ export function WordsPanel({
   const heroWord = sorted[0] ?? null;
 
   return (
-    <div className="relative flex-1 min-h-0 flex flex-col">
+    <div className="relative flex-1 min-h-0 flex flex-col overflow-y-auto">
       {sorted.length === 0 ? (
         <EmptyState
           letterCount={letterCount}
@@ -145,41 +145,40 @@ function HeroView({
   return (
     <div
       key={word.word}
-      className="hero-in flex-1 min-h-0 flex flex-col"
+      className="hero-in my-auto flex flex-col items-center text-center px-5 py-2 max-w-xl mx-auto w-full"
     >
-      {/* Top zone: word + definition. Scrolls if too tall, never pushes
-          the controls below it off-screen. */}
-      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col px-5">
-        <div className="my-auto text-center w-full max-w-xl mx-auto py-3">
-          <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.75rem,4.5vw,2.75rem)]">
-            {word.word}
-          </h3>
-          <p className="mt-3 max-w-md mx-auto font-body text-base sm:text-lg leading-snug text-ink-soft">
-            {word.definition || 'no definition on file'}
-          </p>
-        </div>
-      </div>
+      {/* Featured word — compact */}
+      <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.5rem,4vw,2.25rem)]">
+        {word.word}
+      </h3>
 
-      {/* Bottom zone: controls + count. Always visible no matter how
-          long the definition is. */}
-      <div className="shrink-0 px-4 sm:px-6 pt-2 pb-3 sm:pt-3 sm:pb-4 flex flex-col items-center gap-2.5 sm:gap-3">
+      {/* Definition — Garamond regular, line-clamped so the layout
+          stays predictable even on long definitions. */}
+      <p className="mt-2 max-w-md font-body text-sm sm:text-base leading-snug text-ink-soft line-clamp-3">
+        {word.definition || 'no definition on file'}
+      </p>
+
+      {/* Primary CTA on its own row */}
+      <div className="mt-3 sm:mt-4">
         <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
-
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
-          <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
-          <SortPill value={sort} onChange={setSort} />
-          {letterCount > 0 && (
-            <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
-              Empty Cup
-            </GhostButton>
-          )}
-        </div>
-
-        <p className="text-sm sm:text-base text-ink-soft">
-          <span className="font-display font-black text-ink">{totalCount}</span>{' '}
-          word{totalCount === 1 ? '' : 's'} on offer
-        </p>
       </div>
+
+      {/* Secondary controls */}
+      <div className="mt-2 sm:mt-2.5 flex items-center justify-center gap-1.5 flex-wrap">
+        <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
+        <SortPill value={sort} onChange={setSort} />
+        {letterCount > 0 && (
+          <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+            Empty Cup
+          </GhostButton>
+        )}
+      </div>
+
+      {/* Total count */}
+      <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-ink-soft">
+        <span className="font-display font-black text-ink">{totalCount}</span>{' '}
+        word{totalCount === 1 ? '' : 's'} on offer
+      </p>
     </div>
   );
 }

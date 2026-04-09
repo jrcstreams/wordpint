@@ -101,7 +101,7 @@ export default function App() {
       </header>
 
       {/* ============ POUR STAGE ============ */}
-      <div className="relative basis-[52%] sm:basis-[56%] grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink">
+      <div className="relative basis-[44%] sm:basis-[48%] grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink">
         <PhysicsStage ref={stageRef} />
         <BarTap
           onStart={() => stageRef.current?.startPour()}
@@ -114,12 +114,14 @@ export default function App() {
       {/* ============ WORDS + TAB (seamless flow) ============ */}
       <div className="flex-1 min-h-0 flex flex-col bg-paper-grain">
         {/* How it works — between the cup and the words section */}
-        <div className="shrink-0 px-4 sm:px-6 pt-3 pb-1 text-center">
-          <p className="text-[11px] sm:text-xs text-ink-mute leading-snug max-w-2xl mx-auto">
-            Hold the tap handle to pour letters into the cup. Words that can be
-            spelled with that combo of letters will then appear. Choosing{' '}
-            <span className="font-semibold text-ink-soft">"Next Word"</span>{' '}
-            removes those letters from the cup.
+        <div className="shrink-0 px-4 sm:px-6 pt-2.5 pb-0.5 text-center">
+          <p className="font-body italic text-[12px] sm:text-[13px] text-ink-mute leading-snug max-w-xl mx-auto">
+            Pour letters into the cup — words you can spell will appear below.
+            Click{' '}
+            <em className="not-italic font-semibold text-ink-soft">
+              "Next Word"
+            </em>{' '}
+            to use those letters.
           </p>
         </div>
         {currentResults.length > 0 && (

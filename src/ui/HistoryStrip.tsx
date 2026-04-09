@@ -17,8 +17,8 @@ export function HistoryStrip({ history, onWordClick }: HistoryStripProps) {
   if (history.length === 0) return null;
   const recent = [...history].reverse().slice(0, 8);
   return (
-    <div className="shrink-0 pb-3 sm:pb-4 overflow-x-auto">
-      <ul className="flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 whitespace-nowrap">
+    <div className="shrink-0 pb-2 sm:pb-2.5 overflow-x-auto">
+      <ul className="flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 whitespace-nowrap">
         {recent.map((w, i) => (
           <Fragment key={`${w}-${i}`}>
             {i > 0 && (
@@ -33,7 +33,7 @@ export function HistoryStrip({ history, onWordClick }: HistoryStripProps) {
               <button
                 type="button"
                 onClick={() => onWordClick(w)}
-                className="font-body text-base sm:text-lg text-ink lowercase whitespace-nowrap underline decoration-dotted decoration-ink/30 underline-offset-[3px] hover:decoration-ink hover:bg-ink/5 px-1.5 py-0.5 rounded transition"
+                className="font-body text-sm sm:text-base text-ink lowercase whitespace-nowrap underline decoration-dotted decoration-ink/30 underline-offset-[3px] hover:decoration-ink hover:bg-ink/5 px-1.5 py-0.5 rounded transition"
                 aria-label={`Show definition of ${w}`}
               >
                 {w}
