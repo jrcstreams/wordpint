@@ -62,6 +62,8 @@ export default function App() {
   const setDictionaryStatus = useAppStore((s) => s.setDictionaryStatus);
   const useWordAction = useAppStore((s) => s.useWord);
   const clearGlass = useAppStore((s) => s.clearGlass);
+  const setPouring = useAppStore((s) => s.setPouring);
+  const pouring = useAppStore((s) => s.pouring);
 
   const loadDictionary = useCallback(async () => {
     setDictionaryStatus('loading');
@@ -102,10 +104,10 @@ export default function App() {
 
   const showTapHint = lettersInGlass.size === 0 && history.length === 0;
 
-  const modalDefinition =
+  const modalDefinitions =
     modalWord && wordIndex ? wordIndex.definitions[modalWord] ?? null : null;
-  const modalProper =
-    modalWord && wordIndex ? wordIndex.properNouns?.[modalWord] === true : false;
+  const modalDisplay =
+    modalWord && wordIndex ? wordIndex.displayForms?.[modalWord] : undefined;
 
   return (
     <div className="flex flex-col h-full bg-paper text-ink">
@@ -153,8 +155,14 @@ export default function App() {
       >
         <PhysicsStage ref={stageRef} />
         <BarTap
-          onStart={() => stageRef.current?.startPour()}
-          onStop={() => stageRef.current?.stopPour()}
+          onStart={() => {
+            setPouring(true);
+            stageRef.current?.startPour();
+          }}
+          onStop={() => {
+            setPouring(false);
+            stageRef.current?.stopPour();
+          }}
           showHint={showTapHint}
         />
         <DictionaryBanner status={dictionaryStatus} onRetry={loadDictionary} />
@@ -194,11 +202,16 @@ export default function App() {
           results={currentResults}
           letterCount={lettersInGlass.size}
           dictionaryReady={dictionaryStatus === 'ready'}
+          pouring={pouring}
           onPick={onPickWord}
           onEmptyCup={onEmptyCup}
         />
         {history.length > 0 && (
-          <HistoryStrip history={history} onWordClick={setModalWord} />
+          <HistoryStrip
+            history={history}
+            displayForms={wordIndex?.displayForms}
+            onWordClick={setModalWord}
+          />
         )}
       </div>
 
@@ -231,8 +244,8 @@ export default function App() {
       {/* ============ MODAL ============ */}
       <WordModal
         word={modalWord}
-        definition={modalDefinition}
-        proper={modalProper}
+        definitions={modalDefinitions}
+        display={modalDisplay}
         onClose={() => setModalWord(null)}
       />
     </div>

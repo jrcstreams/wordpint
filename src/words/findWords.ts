@@ -39,9 +39,10 @@ export function findWords(
     const needed = signatureToCounts(sig);
     if (!isSubMultiset(needed, have)) continue;
     for (const word of index.bySignature[sig]) {
-      const definition = index.definitions[word] ?? '';
-      const proper = index.properNouns?.[word] === true;
-      results.push({ word, definition, proper });
+      const definitions = index.definitions[word] ?? [];
+      if (definitions.length === 0) continue;
+      const display = index.displayForms?.[word];
+      results.push({ word, definitions, display });
     }
   }
 

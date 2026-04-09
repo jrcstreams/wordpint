@@ -11,18 +11,27 @@ const wndb: { path: string } = require('wordnet-db');
 // WordNet ss_type values from index.sense lex_sense:
 //   1 = noun, 2 = verb, 3 = adjective, 4 = adverb, 5 = adjective satellite
 // In data files the same value is encoded as a letter (n/v/a/r/s).
-// Adjective satellites (5) live inside data.adj alongside the head (3).
+// Adjective satellites (5) live inside data.adj alongside the head (3),
+// so we mirror data.adj entries under both keys.
 
-// lex_filenum values that mark a synset as a proper noun:
-//   14 = noun.group     (organizations, teams, etc.)
-//   15 = noun.location  (places)
-//   18 = noun.person    (people)
-const PROPER_LEX_FILENUMS = new Set([14, 15, 18]);
+// Maximum number of senses to keep per word. Tuned for cost: most
+// common words have 1-3 dominant senses; the long tail of obscure
+// senses bloats the JSON without giving the user anything useful.
+const MAX_SENSES = 3;
+
+interface WordEntry {
+  /** Original casing as it appears in the WordNet data file (with spaces). */
+  display: string;
+  /** Lowercased lookup key. */
+  lower: string;
+}
 
 interface Synset {
   gloss: string;
   lexFilenum: number;
-  words: string[];
+  ssTypeNum: number;
+  synsetOffset: string;
+  words: WordEntry[];
 }
 
 const POS_FILES: Array<{ file: string; ssTypeNum: number }> = [
@@ -49,27 +58,32 @@ function parseDataFile(
     const synsetOffset = tokens[0];
     const lexFilenum = parseInt(tokens[1], 10);
     const wCnt = parseInt(tokens[3], 16);
-    const words: string[] = [];
+    const words: WordEntry[] = [];
     for (let i = 0; i < wCnt; i++) {
       const raw = tokens[4 + i * 2];
       if (!raw) continue;
-      const word = raw.toLowerCase().replace(/_/g, ' ');
-      words.push(word);
+      const display = raw.replace(/_/g, ' ');
+      words.push({ display, lower: display.toLowerCase() });
     }
-    const synset: Synset = { gloss, lexFilenum, words };
+    const synset: Synset = {
+      gloss,
+      lexFilenum,
+      ssTypeNum,
+      synsetOffset,
+      words,
+    };
     synsetByKey.set(`${ssTypeNum}:${synsetOffset}`, synset);
-    // index.sense uses ss_type 5 for adjective satellites; their synset
-    // offsets live in data.adj (ss_type 3). Mirror the entry under both
-    // keys so satellite lookups resolve.
     if (ssTypeNum === 3) {
+      // index.sense uses ss_type 5 for adjective satellites; their
+      // synset offsets live in data.adj. Mirror under both keys.
       synsetByKey.set(`5:${synsetOffset}`, synset);
     }
-    for (const w of words) {
-      const arr = wordToSynsets.get(w);
+    for (const { lower } of words) {
+      const arr = wordToSynsets.get(lower);
       if (arr) {
         arr.push(synset);
       } else {
-        wordToSynsets.set(w, [synset]);
+        wordToSynsets.set(lower, [synset]);
       }
     }
   }
@@ -141,48 +155,62 @@ function main() {
     readFileSync(join(wndb.path, 'index.sense'), 'utf8'),
   );
 
-  const definitions: Record<string, string> = {};
-  const properNouns: Record<string, true> = {};
+  const definitions: Record<string, string[]> = {};
+  const displayForms: Record<string, string> = {};
+  let displayOverrides = 0;
 
-  // For each candidate word, pick the most-tagged sense from
-  // index.sense (highest tag_cnt, ties broken by lower sense_number).
-  // This is what makes "cat" return the feline, not the CT-scan
-  // imaging method that happens to come first in data.noun.
-  for (const [word, synsets] of wordToSynsets) {
+  // For each candidate word, build an ordered list of synsets:
+  //   1. Sorted from index.sense by tag_cnt desc (with sense_number as tiebreaker)
+  //   2. Padded with any remaining synsets that mention the word, in
+  //      data-file order, for lemmas missing from index.sense.
+  // Take the top MAX_SENSES, store their glosses in order, and pull
+  // the display form from the primary (top-ranked) sense.
+  for (const [word, synsetsForWord] of wordToSynsets) {
     if (!isAcceptableWord(word)) continue;
 
-    let chosen: Synset | null = null;
+    const ranked: Synset[] = [];
+    const seen = new Set<Synset>();
 
     const senses = senseIndex.get(word);
     if (senses && senses.length > 0) {
-      const sorted = [...senses].sort(
+      const sortedSenses = [...senses].sort(
         (a, b) => b.tagCount - a.tagCount || a.senseNumber - b.senseNumber,
       );
-      for (const s of sorted) {
+      for (const s of sortedSenses) {
         const found = synsetByKey.get(`${s.ssTypeNum}:${s.synsetOffset}`);
-        if (found && found.gloss && found.gloss.trim().length > 0) {
-          chosen = found;
-          break;
-        }
+        if (!found) continue;
+        if (!found.gloss || found.gloss.trim().length === 0) continue;
+        if (seen.has(found)) continue;
+        ranked.push(found);
+        seen.add(found);
+        if (ranked.length >= MAX_SENSES) break;
       }
     }
 
-    // Fall back to the first synset (any POS) that has a usable gloss.
-    // Words missing from index.sense or whose tagged sense has no gloss
-    // still get a definition rather than disappearing.
-    if (!chosen) {
-      for (const synset of synsets) {
-        if (synset.gloss && synset.gloss.trim().length > 0) {
-          chosen = synset;
-          break;
-        }
+    if (ranked.length < MAX_SENSES) {
+      for (const synset of synsetsForWord) {
+        if (!synset.gloss || synset.gloss.trim().length === 0) continue;
+        if (seen.has(synset)) continue;
+        ranked.push(synset);
+        seen.add(synset);
+        if (ranked.length >= MAX_SENSES) break;
       }
     }
 
-    if (!chosen) continue;
-    definitions[word] = chosen.gloss;
-    if (PROPER_LEX_FILENUMS.has(chosen.lexFilenum)) {
-      properNouns[word] = true;
+    if (ranked.length === 0) continue;
+
+    definitions[word] = ranked.map((s) => s.gloss);
+
+    // Display form: take it from the primary sense's word list. If
+    // WordNet stored the lemma with non-lowercase characters (Paris,
+    // NASA, McDonald), capture that exact form so the UI can render
+    // proper nouns and acronyms correctly. If the casing matches the
+    // lowercase key, no override is needed.
+    const primary = ranked[0];
+    const primaryEntry = primary.words.find((w) => w.lower === word);
+    if (primaryEntry && primaryEntry.display !== word) {
+      displayForms[word] = primaryEntry.display;
+      displayOverrides += 1;
     }
   }
 
@@ -197,14 +225,21 @@ function main() {
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(
     outPath,
-    JSON.stringify({ definitions, bySignature, properNouns }),
+    JSON.stringify({ definitions, displayForms, bySignature }),
   );
 
   const sizeMb = (statSync(outPath).size / (1024 * 1024)).toFixed(2);
+  let totalSenses = 0;
+  let multiSense = 0;
+  for (const arr of Object.values(definitions)) {
+    totalSenses += arr.length;
+    if (arr.length > 1) multiSense += 1;
+  }
   console.log(
-    `Wrote ${outPath}: ${Object.keys(definitions).length} words, ${
-      Object.keys(bySignature).length
-    } signatures, ${Object.keys(properNouns).length} proper nouns (${sizeMb} MB)`,
+    `Wrote ${outPath}: ${Object.keys(definitions).length} words, ` +
+      `${Object.keys(bySignature).length} signatures, ` +
+      `${totalSenses} senses (${multiSense} multi-sense), ` +
+      `${displayOverrides} display overrides (${sizeMb} MB)`,
   );
 }
 

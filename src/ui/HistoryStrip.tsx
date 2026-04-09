@@ -2,6 +2,8 @@ import { Fragment } from 'react';
 
 interface HistoryStripProps {
   history: string[];
+  /** Optional override casing per lowercase key (acronyms, proper nouns). */
+  displayForms?: Record<string, string>;
   onWordClick: (word: string) => void;
 }
 
@@ -12,7 +14,11 @@ interface HistoryStripProps {
  * vertical space instead of ~65px. App.tsx only renders this when
  * history.length > 0.
  */
-export function HistoryStrip({ history, onWordClick }: HistoryStripProps) {
+export function HistoryStrip({
+  history,
+  displayForms,
+  onWordClick,
+}: HistoryStripProps) {
   if (history.length === 0) return null;
   const recent = [...history].reverse().slice(0, 8);
   return (
@@ -21,28 +27,35 @@ export function HistoryStrip({ history, onWordClick }: HistoryStripProps) {
         <li className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.18em] text-ink-mute mr-0.5 sm:mr-1 select-none">
           Running Tab —
         </li>
-        {recent.map((w, i) => (
-          <Fragment key={`${w}-${i}`}>
-            {i > 0 && (
-              <li
-                aria-hidden="true"
-                className="text-ink/30 select-none text-xs"
-              >
-                ·
+        {recent.map((w, i) => {
+          const display = displayForms?.[w];
+          // Drop the lowercase class for entries that have an explicit
+          // display form so acronyms (NASA) and proper nouns (Paris)
+          // render with their real casing.
+          const caseClass = display ? '' : 'lowercase';
+          return (
+            <Fragment key={`${w}-${i}`}>
+              {i > 0 && (
+                <li
+                  aria-hidden="true"
+                  className="text-ink/30 select-none text-xs"
+                >
+                  ·
+                </li>
+              )}
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onWordClick(w)}
+                  className={`font-body text-xs sm:text-sm text-ink ${caseClass} whitespace-nowrap underline decoration-dotted decoration-ink/30 underline-offset-[3px] hover:decoration-ink hover:bg-ink/5 px-1 py-0.5 rounded transition`}
+                  aria-label={`Show definition of ${display ?? w}`}
+                >
+                  {display ?? w}
+                </button>
               </li>
-            )}
-            <li>
-              <button
-                type="button"
-                onClick={() => onWordClick(w)}
-                className="font-body text-xs sm:text-sm text-ink lowercase whitespace-nowrap underline decoration-dotted decoration-ink/30 underline-offset-[3px] hover:decoration-ink hover:bg-ink/5 px-1 py-0.5 rounded transition"
-                aria-label={`Show definition of ${w}`}
-              >
-                {w}
-              </button>
-            </li>
-          </Fragment>
-        ))}
+            </Fragment>
+          );
+        })}
       </ul>
     </div>
   );

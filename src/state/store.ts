@@ -10,6 +10,13 @@ interface AppState {
   dictionaryStatus: DictionaryStatus;
   wordIndex: WordIndex | null;
   showFullList: boolean;
+  /**
+   * True while the user is holding the tap. The hero word is held
+   * (or empty for brand-new pours) until this flips back to false,
+   * so the first surfaced word reflects the full letter set instead
+   * of whatever 3-letter combo happened to land first.
+   */
+  pouring: boolean;
 
   letterEnteredGlass: (id: number, char: string) => void;
   letterLeftGlass: (id: number) => void;
@@ -18,6 +25,7 @@ interface AppState {
   setCurrentWord: (word: WordResult | null) => void;
   setDictionary: (index: WordIndex) => void;
   setDictionaryStatus: (status: DictionaryStatus) => void;
+  setPouring: (v: boolean) => void;
   toggleFullList: () => void;
 }
 
@@ -28,6 +36,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   dictionaryStatus: 'idle',
   wordIndex: null,
   showFullList: false,
+  pouring: false,
 
   letterEnteredGlass: (id, char) => {
     const next = new Map(get().lettersInGlass);
@@ -79,5 +88,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCurrentWord: (word) => set({ currentWord: word }),
   setDictionary: (index) => set({ wordIndex: index, dictionaryStatus: 'ready' }),
   setDictionaryStatus: (status) => set({ dictionaryStatus: status }),
+  setPouring: (v) => set({ pouring: v }),
   toggleFullList: () => set({ showFullList: !get().showFullList }),
 }));

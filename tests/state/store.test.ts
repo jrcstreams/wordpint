@@ -60,7 +60,7 @@ describe('useAppStore', () => {
   });
 
   it('setCurrentWord stores the current word', () => {
-    useAppStore.getState().setCurrentWord({ word: 'cat', definition: 'feline' });
+    useAppStore.getState().setCurrentWord({ word: 'cat', definitions: ['feline'] });
     expect(useAppStore.getState().currentWord?.word).toBe('cat');
   });
 

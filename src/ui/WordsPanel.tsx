@@ -5,6 +5,13 @@ interface WordsPanelProps {
   results: WordResult[];
   letterCount: number;
   dictionaryReady: boolean;
+  /**
+   * True while the user is actively pouring. The hero word is held in
+   * place (or empty for brand-new pours) until this flips back to
+   * false — that way the first surfaced word reflects the full letter
+   * set, not the first 3-letter combo that landed.
+   */
+  pouring: boolean;
   onPick: (word: string) => void;
   onEmptyCup: () => void;
 }
@@ -32,9 +39,10 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
 }
 
 function displayWord(w: WordResult): string {
-  // Proper nouns (people, places, organizations) get a leading capital;
-  // everything else stays lowercase to match the display style.
-  return w.proper ? w.word.charAt(0).toUpperCase() + w.word.slice(1) : w.word;
+  // Use the explicit display form when WordNet stored the entry with
+  // non-lowercase letters — covers acronyms (NASA) and proper nouns
+  // (Paris). Otherwise the lowercase lookup key is the display.
+  return w.display ?? w.word;
 }
 
 function fingerprint(results: WordResult[]): number {
@@ -50,6 +58,7 @@ export function WordsPanel({
   results,
   letterCount,
   dictionaryReady,
+  pouring,
   onPick,
   onEmptyCup,
 }: WordsPanelProps) {
@@ -100,36 +109,52 @@ export function WordsPanel({
 
   // The displayed hero word.
   //
+  // - While the user is actively pouring, hold whatever was already
+  //   locked. If nothing was locked (brand-new pour into an empty
+  //   cup), return null and the panel renders a "pouring…" placeholder
+  //   instead of snapping to whichever 3-letter combo landed first.
+  //   The hero gets picked when pouring stops and the full letter set
+  //   is in.
+  //
   // - Non-random sorts (longest / shortest / A→Z) always show sorted[0]
-  //   LIVE. As the user keeps pouring letters, the displayed word
-  //   updates to the new top of the sort. This is what the user wants
-  //   from a sort: a current view of the cup, not a frozen snapshot.
+  //   LIVE once pouring is done. As the user keeps interacting, the
+  //   displayed word updates to the new top of the sort.
   //
   // - Random uses a stable lock (selectedWordKey) so the displayed
-  //   word doesn't flicker every time a new letter lands in the cup.
-  //   The lock falls back to sorted[0] if the locked word is no
-  //   longer spellable.
+  //   word doesn't flicker between unrelated random picks. The lock
+  //   falls back to sorted[0] if the locked word is no longer
+  //   spellable.
   const heroWord = useMemo<WordResult | null>(() => {
     if (sorted.length === 0) return null;
+    if (pouring) {
+      if (selectedWordKey) {
+        const found = sorted.find((w) => w.word === selectedWordKey);
+        if (found) return found;
+      }
+      return null;
+    }
     if (sort !== 'random') return sorted[0];
     if (selectedWordKey) {
       const found = sorted.find((w) => w.word === selectedWordKey);
       if (found) return found;
     }
     return sorted[0];
-  }, [sorted, selectedWordKey, sort]);
+  }, [sorted, selectedWordKey, sort, pouring]);
 
   // Keep selectedWordKey in sync with whatever the hero is currently
-  // displaying — but only in random mode. Non-random modes don't use
-  // the lock at all.
+  // displaying — but only in random mode AND only when pouring has
+  // stopped. We deliberately do NOT clear the lock just because the
+  // hero is null mid-pour (that null is the "wait for pour to finish"
+  // state, not a "no word available" state).
   useEffect(() => {
     if (sort !== 'random') return;
+    if (pouring) return;
     if (heroWord && heroWord.word !== selectedWordKey) {
       setSelectedWordKey(heroWord.word);
     } else if (!heroWord && selectedWordKey !== null) {
       setSelectedWordKey(null);
     }
-  }, [heroWord, selectedWordKey, sort]);
+  }, [heroWord, selectedWordKey, sort, pouring]);
 
   const handleNext = () => {
     if (!heroWord) return;
@@ -145,6 +170,7 @@ export function WordsPanel({
         <EmptyState
           letterCount={letterCount}
           dictionaryReady={dictionaryReady}
+          pouring={pouring}
         />
       ) : showAll ? (
         <GridView
@@ -159,9 +185,9 @@ export function WordsPanel({
           onShowSingle={() => setShowAll(false)}
           onEmptyCup={onEmptyCup}
         />
-      ) : (
+      ) : heroWord ? (
         <HeroView
-          word={heroWord!}
+          word={heroWord}
           sort={sort}
           setSort={setSort}
           letterCount={letterCount}
@@ -169,7 +195,64 @@ export function WordsPanel({
           onShowAll={() => setShowAll(true)}
           onEmptyCup={onEmptyCup}
         />
+      ) : (
+        <PouringPlaceholder
+          sort={sort}
+          setSort={setSort}
+          letterCount={letterCount}
+          onShowAll={() => setShowAll(true)}
+          onEmptyCup={onEmptyCup}
+        />
       )}
+    </div>
+  );
+}
+
+/* ============================== Pouring placeholder ============================== */
+
+function PouringPlaceholder({
+  sort,
+  setSort,
+  letterCount,
+  onShowAll,
+  onEmptyCup,
+}: {
+  sort: SortMode;
+  setSort: (m: SortMode) => void;
+  letterCount: number;
+  onShowAll: () => void;
+  onEmptyCup: () => void;
+}) {
+  // Shown while a brand-new pour is in progress so we don't snap to
+  // the first 3-letter word that lands. Same vertical layout as
+  // HeroView so the controls don't shift when the real word slides
+  // in.
+  return (
+    <div className="flex-1 min-h-0 flex flex-col">
+      <div className="flex-1 min-h-0 overflow-hidden px-5 flex flex-col">
+        <div className="my-auto text-center w-full max-w-xl mx-auto py-2">
+          <p className="font-display text-2xl sm:text-3xl font-black text-ink-mute leading-none">
+            pouring<span className="pour-dots">…</span>
+          </p>
+          <p className="mt-3 text-xs sm:text-sm text-ink-mute">
+            Picking the best word once your pour finishes.
+          </p>
+        </div>
+      </div>
+      <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-3 sm:pt-3 sm:pb-3.5 flex flex-col items-center border-t border-ink/15">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+          <PrimaryButton onClick={() => {}} disabled>
+            Next Word →
+          </PrimaryButton>
+          <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
+          <SortPill value={sort} onChange={setSort} />
+          {letterCount > 0 && (
+            <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+              Empty Cup
+            </GhostButton>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -193,6 +276,15 @@ function HeroView({
   onShowAll: () => void;
   onEmptyCup: () => void;
 }) {
+  // Per-word "which sense are we looking at" cursor. Resets to the
+  // primary sense whenever the displayed word changes (handled by
+  // the key prop on the wrapper, which remounts the component).
+  const [defIndex, setDefIndex] = useState(0);
+  const senseCount = word.definitions.length;
+  const currentDef = word.definitions[defIndex] ?? word.definitions[0] ?? '';
+  const showSwipe = senseCount > 1;
+  const hasCase = word.display !== undefined;
+
   return (
     <div
       key={word.word}
@@ -207,16 +299,41 @@ function HeroView({
         <div className="my-auto text-center w-full max-w-xl mx-auto py-2">
           <h3
             className={`font-display font-black tracking-tight text-ink leading-[0.9] text-[clamp(1.4rem,3.8vw,2.125rem)] ${
-              word.proper ? '' : 'lowercase'
+              hasCase ? '' : 'lowercase'
             }`}
           >
             {displayWord(word)}
           </h3>
           <p className="mt-2 max-w-md mx-auto font-body text-sm sm:text-base leading-snug text-ink-soft line-clamp-2 sm:line-clamp-3 min-h-[40px] sm:min-h-[66px]">
-            {word.definition && word.definition.trim().length > 0
-              ? word.definition
+            {currentDef && currentDef.trim().length > 0
+              ? currentDef
               : 'No definition on file.'}
           </p>
+          {showSwipe && (
+            <div className="mt-1.5 flex items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  setDefIndex((i) => (i - 1 + senseCount) % senseCount)
+                }
+                className="text-ink hover:bg-ink/5 rounded-md w-7 h-7 flex items-center justify-center text-base font-bold leading-none transition"
+                aria-label="Previous definition"
+              >
+                ‹
+              </button>
+              <span className="text-[10px] uppercase tracking-[0.18em] font-bold text-ink-mute tabular-nums">
+                sense {defIndex + 1} of {senseCount}
+              </span>
+              <button
+                type="button"
+                onClick={() => setDefIndex((i) => (i + 1) % senseCount)}
+                className="text-ink hover:bg-ink/5 rounded-md w-7 h-7 flex items-center justify-center text-base font-bold leading-none transition"
+                aria-label="Next definition"
+              >
+                ›
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -224,9 +341,7 @@ function HeroView({
           shrink-0, always at the same y position. Next Word lives
           inline with the secondary controls so the entire row fits in
           one band. Next Word stays visually most prominent via the
-          filled (bg-ink text-paper) treatment vs the ghost outlines.
-          The total count moved into the SectionDivider above so it's
-          visible without taking hero space. */}
+          filled (bg-ink text-paper) treatment vs the ghost outlines. */}
       <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-3 sm:pt-3 sm:pb-3.5 flex flex-col items-center border-t border-ink/15">
         <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
           <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
@@ -291,13 +406,13 @@ function GridView({
             >
               <div
                 className={`font-display text-lg sm:text-xl font-black tracking-tight text-ink leading-none shrink-0 ${
-                  r.proper ? '' : 'lowercase'
+                  r.display ? '' : 'lowercase'
                 }`}
               >
                 {displayWord(r)}
               </div>
               <p className="mt-1.5 font-body text-xs sm:text-sm text-ink-soft leading-snug line-clamp-3 shrink-0">
-                {r.definition || '— no definition —'}
+                {r.definitions[0] || '— no definition —'}
               </p>
             </button>
           </li>
@@ -338,7 +453,7 @@ function PrimaryButton({
     <button
       type="button"
       onClick={onClick}
-      className="text-xs font-semibold px-3.5 py-2 border border-ink bg-ink text-paper hover:bg-ink-soft rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-paper-grain focus-visible:ring-ink"
+      className="text-xs font-semibold px-3.5 py-2 border border-ink bg-ink text-paper hover:bg-ink-soft rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-paper-grain focus-visible:ring-ink disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-ink"
       {...rest}
     >
       {children}
@@ -444,15 +559,29 @@ function PageNav({
 function EmptyState({
   letterCount,
   dictionaryReady,
+  pouring,
 }: {
   letterCount: number;
   dictionaryReady: boolean;
+  pouring: boolean;
 }) {
   if (!dictionaryReady) {
     return (
       <div className="my-auto text-center">
         <p className="text-[11px] uppercase tracking-[0.18em] text-ink-mute">
           opening the dictionary…
+        </p>
+      </div>
+    );
+  }
+  if (pouring) {
+    return (
+      <div className="my-auto flex flex-col items-center gap-3 sm:gap-4 text-center px-4">
+        <p className="font-display text-2xl sm:text-3xl font-black text-ink-mute leading-none">
+          pouring<span className="pour-dots">…</span>
+        </p>
+        <p className="text-sm sm:text-base text-ink-mute">
+          Picking the best word once your pour finishes.
         </p>
       </div>
     );

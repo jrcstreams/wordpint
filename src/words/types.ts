@@ -1,12 +1,18 @@
 export interface WordIndex {
-  definitions: Record<string, string>;
-  bySignature: Record<string, string[]>;
   /**
-   * Set of words that come from a proper-noun synset (people, places,
-   * organizations). Used by the UI to capitalize them on display.
-   * Optional so older builds of wordnet.json still load.
+   * Map from lowercase lookup key to an ordered list of glosses
+   * (most-tagged sense first). Most words have one entry; common
+   * words may have up to MAX_SENSES.
    */
-  properNouns?: Record<string, true>;
+  definitions: Record<string, string[]>;
+  /**
+   * Optional override casing for entries WordNet stores with
+   * non-lowercase letters — proper nouns ("Paris", "Reagan") and
+   * acronyms ("NASA", "FBI"). Missing key = render the lowercase
+   * lookup key as-is.
+   */
+  displayForms?: Record<string, string>;
+  bySignature: Record<string, string[]>;
 }
 
 export interface FindWordsOpts {
@@ -14,8 +20,10 @@ export interface FindWordsOpts {
 }
 
 export interface WordResult {
+  /** Lowercase lookup key — what the cup spells. */
   word: string;
-  definition: string;
-  /** True for proper nouns — UI should capitalize the first letter. */
-  proper?: boolean;
+  /** Ordered list of glosses, primary sense first. Always at least one. */
+  definitions: string[];
+  /** Display casing override (acronym / proper noun). */
+  display?: string;
 }

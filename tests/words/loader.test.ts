@@ -8,7 +8,7 @@ describe('loadWordIndex', () => {
 
   it('fetches /wordnet.json and returns the parsed index', async () => {
     const fixture = {
-      definitions: { cat: 'a feline' },
+      definitions: { cat: ['a feline'] },
       bySignature: { act: ['cat'] },
     };
     vi.stubGlobal(
@@ -20,7 +20,7 @@ describe('loadWordIndex', () => {
     );
 
     const result = await loadWordIndex();
-    expect(result.definitions.cat).toBe('a feline');
+    expect(result.definitions.cat).toEqual(['a feline']);
     expect(result.bySignature.act).toEqual(['cat']);
   });
 

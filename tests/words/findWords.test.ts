@@ -4,12 +4,12 @@ import type { WordIndex } from '../../src/words/types';
 
 const fixture: WordIndex = {
   definitions: {
-    cat: 'a small domesticated feline',
-    act: 'a thing done',
-    tact: 'sensitivity in dealing with others',
-    bee: 'a flying insect',
-    be: 'to exist',
-    zzz: 'sleep noise',
+    cat: ['a small domesticated feline'],
+    act: ['a thing done'],
+    tact: ['sensitivity in dealing with others'],
+    bee: ['a flying insect'],
+    be: ['to exist'],
+    zzz: ['sleep noise'],
   },
   bySignature: {
     act: ['cat', 'act'],
@@ -56,9 +56,9 @@ describe('findWords', () => {
     expect(result).toEqual([]);
   });
 
-  it('includes the definition for each word', () => {
+  it('includes the definitions for each word', () => {
     const result = findWords(['c', 'a', 't'], fixture);
     const cat = result.find((r) => r.word === 'cat');
-    expect(cat?.definition).toBe('a small domesticated feline');
+    expect(cat?.definitions).toEqual(['a small domesticated feline']);
   });
 });

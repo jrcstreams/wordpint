@@ -167,6 +167,17 @@ body {
   animation: modal-card-in 0.22s cubic-bezier(0.22, 0.62, 0.2, 1);
 }
 
+/* ----- Pouring placeholder dots ---------------------------------------- */
+
+@keyframes pour-dots-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+.pour-dots {
+  display: inline-block;
+  animation: pour-dots-pulse 1.1s ease-in-out infinite;
+}
+
 /* ----- Mobile / responsive --------------------------------------------- */
 
 @media (max-width: 640px) {
