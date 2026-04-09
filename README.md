@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# WordPint
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Pour a Pint, Learn a Word.**
 
-Currently, two official plugins are available:
+A static web app where you pour Scrabble letter tiles from a draft tap into a
+pint glass with realistic 2D physics, and the app surfaces words you can spell
+from the letters currently in the cup, complete with definitions from
+[Princeton WordNet](https://wordnet.princeton.edu/).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+![tap → cup → words](docs/superpowers/specs/2026-04-08-pint-of-words-design.md)
 
-## React Compiler
+## What it does
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. **Hold the tap** to pour letters into the pint glass. Letters fall with
+   real physics, stack, and overflow.
+2. **Words you can spell appear below.** Click `Next Word →` to use the
+   featured word (which removes those letters from the cup) and reveal the
+   next one.
+3. **Browse all words** in a paginated grid, **sort** by random / longest /
+   shortest / A→Z, and **empty the cup** at any time.
+4. **Running tab** at the bottom keeps the words you've used this session;
+   click any of them to re-open the definition.
 
-## Expanding the ESLint configuration
+## Tech
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Vite + React + TypeScript** — static SPA, no backend
+- **Matter.js** — 2D physics for the pint glass and falling letter tiles
+- **Zustand** — single source of truth for cup contents, current word,
+  history, and dictionary state
+- **Tailwind CSS** — monochrome paper/ink theme with a single amber accent
+- **Vitest + React Testing Library** — unit tests for the word engine,
+  store, and UI components
+- **WordNet** — preprocessed at build time into a single ~6.5 MB JSON
+  shipped with the bundle
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```bash
+# Install dependencies
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Build the WordNet dictionary (one-time, generates public/wordnet.json)
+npm run build:wordnet
+
+# Run the dev server
+npm run dev
+
+# Run the tests
+npm run test
+
+# Production build
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Architecture
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Three loosely-coupled subsystems:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **`src/physics/`** — Matter.js engine, pint glass body, letter tile factory
+  with a Scrabble-distribution bag, dispenser timing, in-cup sensors, and a
+  React `PhysicsStage` wrapper. Knows nothing about words.
+- **`src/words/`** — pure TS word engine: WordNet loader, anagram subset
+  search via a sorted-letter signature index, length/rarity scoring,
+  definition lookup. Knows nothing about pixels.
+- **`src/ui/`** — React shell: branded draft tap, hero word card, browse-all
+  grid, running tab, page footer, definition modal.
+
+The Zustand store in `src/state/store.ts` is the single bridge between
+physics (which writes letter ins/outs) and the UI/word engine (which reads
+the current cup contents).
+
+## Credits
+
+- **Definitions** — [Princeton WordNet](https://wordnet.princeton.edu/)
+- **Created by** — [John Choudhari](https://www.linkedin.com/in/johnchoudhari/)
+
+## License
+
+MIT

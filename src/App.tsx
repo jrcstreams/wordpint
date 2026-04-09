@@ -11,7 +11,7 @@ import { WordModal } from './ui/WordModal';
 import { SectionDivider } from './ui/SectionDivider';
 import type { WordResult } from './words/types';
 
-const GITHUB_URL = 'https://github.com/johnchoudhari/wordpint';
+const GITHUB_URL = 'https://github.com/jrcstreams/wordpint';
 
 export default function App() {
   const stageRef = useRef<PhysicsStageHandle>(null);
