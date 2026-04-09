@@ -258,20 +258,29 @@ function GridView({
 }) {
   return (
     <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-6 py-3">
-      {/* Cards */}
-      <ul className="flex-1 min-h-0 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+      {/* Cards.
+          - auto-rows-min so each row sizes to its content (NOT to fill
+            the grid). Without this, when the panel is short on mobile
+            the rows shrink to ~50px and the word/def get clipped.
+          - Each card has a hard min-height that always fits the word
+            plus a 2-3 line definition.
+          - The ul itself is flex-1 min-h-0 overflow-y-auto, so if the
+            grid is taller than the available panel space the grid
+            scrolls INTERNALLY. The page itself never scrolls and the
+            pagination row stays pinned below. */}
+      <ul className="flex-1 min-h-0 overflow-y-auto grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 auto-rows-min content-start">
         {visible.map((r) => (
-          <li key={r.word} className="min-h-0">
+          <li key={r.word}>
             <button
               type="button"
               onClick={() => onPick(r.word)}
-              className="group w-full h-full text-left bg-paper border border-ink/60 rounded-sm shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] transition-all px-3 py-2.5 overflow-hidden flex flex-col"
+              className="group w-full min-h-[88px] sm:min-h-[96px] text-left bg-paper border border-ink/60 rounded-sm shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] transition-all px-3 py-2.5 overflow-hidden flex flex-col"
               aria-label={`Use the word ${r.word}`}
             >
               <div className="font-display text-lg sm:text-xl font-black tracking-tight text-ink lowercase leading-none shrink-0">
                 {r.word}
               </div>
-              <p className="mt-1.5 font-body text-xs sm:text-sm text-ink-soft leading-snug line-clamp-3 flex-1 min-h-0">
+              <p className="mt-1.5 font-body text-xs sm:text-sm text-ink-soft leading-snug line-clamp-3 shrink-0">
                 {r.definition || '— no definition —'}
               </p>
             </button>
