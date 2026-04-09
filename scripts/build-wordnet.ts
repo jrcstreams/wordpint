@@ -33,6 +33,12 @@ function parseDataFile(contents: string): Array<{ word: string; gloss: string }>
       // Skip multi-word entries and anything with non a-z chars
       if (!/^[a-z]+$/.test(word)) continue;
       if (word.length < 2 || word.length > 15) continue;
+      // Skip pseudo-words made of a single repeated letter (Roman
+      // numerals like "iii"/"xx", filler glyphs like "aaa", etc.)
+      if (new Set(word).size === 1) continue;
+      // Skip an empty/whitespace-only gloss so the runtime fallback
+      // never has to render "no definition on file" for a real entry.
+      if (!gloss || gloss.trim().length === 0) continue;
       out.push({ word, gloss });
     }
   }

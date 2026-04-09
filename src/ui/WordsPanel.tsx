@@ -203,7 +203,9 @@ function HeroView({
             {word.word}
           </h3>
           <p className="mt-2 max-w-md mx-auto font-body text-sm sm:text-base leading-snug text-ink-soft line-clamp-2 sm:line-clamp-3 min-h-[40px] sm:min-h-[66px]">
-            {word.definition || 'no definition on file'}
+            {word.definition && word.definition.trim().length > 0
+              ? word.definition
+              : 'No definition on file.'}
           </p>
         </div>
       </div>

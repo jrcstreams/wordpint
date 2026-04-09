@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useAppStore } from './state/store';
 import { loadWordIndex } from './words/loader';
 import { findWords } from './words/findWords';
@@ -16,6 +23,36 @@ const GITHUB_URL = 'https://github.com/jrcstreams/wordpint';
 export default function App() {
   const stageRef = useRef<PhysicsStageHandle>(null);
   const [modalWord, setModalWord] = useState<string | null>(null);
+
+  // Responsive bar size based on actual viewport HEIGHT (not width).
+  // Tailwind's default breakpoints are width-based, but the layout
+  // problem is vertical: on short laptop windows the bar at 46% leaves
+  // the words section too small for the hero to fit. Shrink the bar
+  // on shorter viewports so the words section gets the space it needs.
+  const [barBasis, setBarBasis] = useState('44%');
+  const [showExplainer, setShowExplainer] = useState(true);
+
+  useLayoutEffect(() => {
+    const update = () => {
+      const vh = window.innerHeight;
+      if (vh < 720) {
+        setBarBasis('36%');
+        setShowExplainer(false);
+      } else if (vh < 820) {
+        setBarBasis('40%');
+        setShowExplainer(false);
+      } else if (vh < 950) {
+        setBarBasis('44%');
+        setShowExplainer(true);
+      } else {
+        setBarBasis('46%');
+        setShowExplainer(true);
+      }
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
 
   const lettersInGlass = useAppStore((s) => s.lettersInGlass);
   const wordIndex = useAppStore((s) => s.wordIndex);
@@ -105,8 +142,13 @@ export default function App() {
         </a>
       </header>
 
-      {/* ============ POUR STAGE ============ */}
-      <div className="relative basis-[44%] sm:basis-[46%] grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink">
+      {/* ============ POUR STAGE ============
+          flexBasis is responsive to actual viewport height — smaller
+          on shorter laptops so the words section fits without overlap. */}
+      <div
+        className="relative grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink"
+        style={{ flexBasis: barBasis }}
+      >
         <PhysicsStage ref={stageRef} />
         <BarTap
           onStart={() => stageRef.current?.startPour()}
@@ -119,9 +161,12 @@ export default function App() {
       {/* ============ WORDS + TAB (seamless flow) ============ */}
       <div className="flex-1 min-h-0 flex flex-col bg-paper-grain overflow-hidden">
         {/* How it works — concise numbered steps between the cup and
-            the words section. Hidden on mobile to free up panel space
-            for the hero card and the running tab. */}
-        <div className="hidden sm:block shrink-0 px-3 sm:px-6 pt-2 pb-2 sm:pt-3 sm:pb-3">
+            the words section. Hidden on narrow widths AND short
+            heights to free up panel space for the hero. */}
+        <div
+          className="hidden sm:block shrink-0 px-3 sm:px-6 pt-2 pb-2 sm:pt-3 sm:pb-3"
+          style={{ display: showExplainer ? undefined : 'none' }}
+        >
           <ol className="text-[11px] sm:text-[13px] text-ink-mute leading-snug max-w-xl mx-auto flex items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1 flex-wrap">
             <li>
               <span className="font-semibold text-ink-soft">1.</span> Pour
