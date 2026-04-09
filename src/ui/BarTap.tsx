@@ -129,7 +129,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               ✦
             </text>
 
-            {/* PINT */}
+            {/* CLICK */}
             <text
               x="100"
               y="54"
@@ -140,10 +140,10 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               fill="#1a1a1a"
               letterSpacing="1"
             >
-              PINT
+              CLICK
             </text>
 
-            {/* "of" with flanking rules */}
+            {/* "to" with flanking rules */}
             <line
               x1="68"
               y1="64"
@@ -161,7 +161,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               fontStyle="italic"
               fill="#1a1a1a"
             >
-              of
+              to
             </text>
             <line
               x1="110"
@@ -172,7 +172,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               strokeWidth="0.7"
             />
 
-            {/* WORDS */}
+            {/* POUR */}
             <text
               x="100"
               y="92"
@@ -183,7 +183,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
               fill="#1a1a1a"
               letterSpacing="1"
             >
-              WORDS
+              POUR
             </text>
 
             {/* Bottom star */}

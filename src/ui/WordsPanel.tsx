@@ -14,9 +14,9 @@ const PAGE_SIZE = 12;
 export type SortMode = 'random' | 'longest' | 'shortest' | 'alpha';
 
 const SORT_LABELS: Record<SortMode, string> = {
-  random: 'random',
-  longest: 'longest',
-  shortest: 'shortest',
+  random: 'Random',
+  longest: 'Longest',
+  shortest: 'Shortest',
   alpha: 'A → Z',
 };
 
@@ -39,28 +39,6 @@ function fingerprint(results: WordResult[]): number {
     (results[results.length - 1].word.charCodeAt(0) ?? 0)
   );
 }
-
-/* ============================================================================
- * Layout:
- *
- *   ┌──── HEADER ────────────────────────────────────┐
- *   │   ── WORDS ON TAP ──                           │
- *   │   X words on offer                             │
- *   ├──── BODY ──────────────────────────────────────┤
- *   │                                                │
- *   │              elephant                          │
- *   │       "a large mammal having a long..."        │
- *   │              ┌─────────┐                       │
- *   │              │ NEXT  → │                       │
- *   │              └─────────┘                       │
- *   │           ── + N more · all ──                 │
- *   │                                                │
- *   ├──── FOOTER ────────────────────────────────────┤
- *   │   sort ▾    browse all                empty   │
- *   └────────────────────────────────────────────────┘
- *
- * No card chrome on the hero — pure typography on the paper grain.
- * ========================================================================== */
 
 export function WordsPanel({
   results,
@@ -114,23 +92,19 @@ export function WordsPanel({
         : 'pour more letters';
 
   return (
-    <section className="relative flex-1 min-h-0 bg-paper-grain border-t-2 border-ink flex flex-col">
-      {/* ============ HEADER ============ */}
-      <header className="px-4 sm:px-6 pt-5 pb-4 text-center border-b border-ink/25">
-        <div className="flex items-center justify-center gap-3">
-          <span className="h-px w-10 sm:w-16 bg-ink/45" />
-          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-ink leading-none">
-            Words on Tap
-          </h2>
-          <span className="h-px w-10 sm:w-16 bg-ink/45" />
-        </div>
-        <p className="font-receipt text-[10px] sm:text-[11px] uppercase tracking-[0.28em] text-ink-mute mt-2">
-          {status}
-        </p>
-      </header>
+    <section className="relative flex-1 min-h-0 bg-paper-grain flex flex-col">
+      <SectionHeader
+        sort={sort}
+        setSort={setSort}
+        status={status}
+        letterCount={letterCount}
+        resultCount={sorted.length}
+        showAll={showAll}
+        setShowAll={setShowAll}
+        onEmptyCup={onEmptyCup}
+      />
 
-      {/* ============ BODY ============ */}
-      <div className="flex-1 min-h-0 overflow-y-auto flex">
+      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
         {sorted.length === 0 ? (
           <EmptyState
             letterCount={letterCount}
@@ -139,6 +113,9 @@ export function WordsPanel({
         ) : showAll ? (
           <GridView
             visible={sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)}
+            page={page}
+            pageCount={pageCount}
+            setPage={setPage}
             onPick={onPick}
           />
         ) : (
@@ -150,119 +127,95 @@ export function WordsPanel({
           />
         )}
       </div>
-
-      {/* ============ FOOTER ============ */}
-      <Footer
-        sort={sort}
-        setSort={setSort}
-        letterCount={letterCount}
-        resultCount={sorted.length}
-        showAll={showAll}
-        setShowAll={setShowAll}
-        page={page}
-        pageCount={pageCount}
-        setPage={setPage}
-        onEmptyCup={onEmptyCup}
-      />
     </section>
   );
 }
 
-/* ============================== Footer ============================== */
+/* ============================== Section Header ============================== */
 
-function Footer({
+function SectionHeader({
   sort,
   setSort,
+  status,
   letterCount,
   resultCount,
   showAll,
   setShowAll,
-  page,
-  pageCount,
-  setPage,
   onEmptyCup,
 }: {
   sort: SortMode;
   setSort: (m: SortMode) => void;
+  status: string;
   letterCount: number;
   resultCount: number;
   showAll: boolean;
   setShowAll: (v: boolean) => void;
-  page: number;
-  pageCount: number;
-  setPage: (n: number | ((p: number) => number)) => void;
   onEmptyCup: () => void;
 }) {
   return (
-    <footer className="px-4 sm:px-6 py-2.5 border-t border-ink/25 flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
-      {/* Left group */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Sort */}
-        <label className="flex items-center gap-1.5 font-receipt text-[10px] uppercase tracking-[0.22em] text-ink-mute">
-          <span className="hidden sm:inline">sort</span>
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortMode)}
-            className="font-receipt text-[10px] uppercase tracking-[0.22em] bg-paper border border-ink/40 rounded px-1.5 py-1 focus:outline-none focus:border-ink hover:border-ink transition-colors"
-            aria-label="Sort words"
-          >
-            {(Object.keys(SORT_LABELS) as SortMode[]).map((m) => (
-              <option key={m} value={m}>
-                {SORT_LABELS[m]}
-              </option>
-            ))}
-          </select>
-        </label>
+    <header className="shrink-0 px-4 sm:px-6 py-3 border-b-2 border-ink bg-paper flex items-center justify-between gap-3 flex-wrap">
+      {/* Title group */}
+      <div className="flex items-baseline gap-3 min-w-0">
+        <h2 className="font-display text-xl sm:text-2xl font-black tracking-tight text-ink leading-none">
+          Words on Tap
+        </h2>
+        <span className="text-xs text-ink-mute whitespace-nowrap">
+          {status}
+        </span>
+      </div>
 
-        {/* View toggle */}
+      {/* Controls — prominent, sans, bordered */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <SortSelect value={sort} onChange={setSort} />
+
         {resultCount > 0 && (
-          <GhostButton onClick={() => setShowAll(!showAll)}>
-            {showAll ? 'one at a time' : 'browse all'}
-          </GhostButton>
-        )}
-      </div>
-
-      {/* Right group */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Pagination */}
-        {showAll && pageCount > 1 && (
-          <div className="flex items-center gap-1.5 font-receipt text-[10px] uppercase tracking-[0.22em] text-ink-mute">
-            <button
-              type="button"
-              className="px-1.5 py-1 border border-ink/40 rounded hover:bg-ink hover:text-paper transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink-mute"
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              disabled={page === 0}
-              aria-label="Previous page"
-            >
-              ‹
-            </button>
-            <span className="tabular-nums">
-              {page + 1}/{pageCount}
-            </span>
-            <button
-              type="button"
-              className="px-1.5 py-1 border border-ink/40 rounded hover:bg-ink hover:text-paper transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink-mute"
-              onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
-              disabled={page >= pageCount - 1}
-              aria-label="Next page"
-            >
-              ›
-            </button>
-          </div>
+          <ToolbarButton onClick={() => setShowAll(!showAll)}>
+            {showAll ? 'Single' : 'Browse all'}
+          </ToolbarButton>
         )}
 
-        {/* Empty cup */}
         {letterCount > 0 && (
-          <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
-            empty cup
-          </GhostButton>
+          <ToolbarButton onClick={onEmptyCup} aria-label="Empty the cup">
+            Empty cup
+          </ToolbarButton>
         )}
       </div>
-    </footer>
+    </header>
   );
 }
 
-function GhostButton({
+function SortSelect({
+  value,
+  onChange,
+}: {
+  value: SortMode;
+  onChange: (m: SortMode) => void;
+}) {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value as SortMode)}
+        className="appearance-none text-xs font-medium uppercase tracking-[0.12em] bg-paper border border-ink/70 hover:border-ink rounded pl-3 pr-8 py-2 cursor-pointer focus:outline-none focus:border-ink transition-colors"
+        aria-label="Sort words"
+      >
+        {(Object.keys(SORT_LABELS) as SortMode[]).map((m) => (
+          <option key={m} value={m}>
+            Sort: {SORT_LABELS[m]}
+          </option>
+        ))}
+      </select>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-ink text-[10px]"
+      >
+        ▾
+      </span>
+    </div>
+  );
+}
+
+function ToolbarButton({
   children,
   onClick,
   ...rest
@@ -274,7 +227,7 @@ function GhostButton({
     <button
       type="button"
       onClick={onClick}
-      className="font-receipt text-[10px] uppercase tracking-[0.22em] px-2.5 py-1 border border-ink/50 rounded hover:bg-ink hover:text-paper transition-colors"
+      className="text-xs font-medium uppercase tracking-[0.12em] px-3 py-2 border border-ink/70 hover:bg-ink hover:text-paper rounded transition-colors"
       {...rest}
     >
       {children}
@@ -298,63 +251,60 @@ function HeroView({
   return (
     <div
       key={word.word}
-      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-6 py-6 sm:py-8 max-w-3xl mx-auto w-full"
+      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-6 py-5 sm:py-7 max-w-3xl mx-auto w-full"
     >
-      {/* The word */}
-      <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.85] text-[clamp(3rem,9vw,5.75rem)]">
+      {/* The featured word */}
+      <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(2.4rem,6.5vw,4.25rem)]">
         {word.word}
       </h3>
 
       {/* Definition with ornamental serif quotes */}
-      <div className="relative mt-6 sm:mt-7 max-w-2xl px-6 sm:px-10">
+      <div className="relative mt-5 sm:mt-6 max-w-xl px-6">
         <span
           aria-hidden="true"
-          className="absolute left-0 -top-3 sm:-top-4 font-display text-4xl sm:text-5xl text-ink/35 leading-none select-none"
+          className="absolute left-0 -top-3 sm:-top-4 font-display text-3xl sm:text-4xl text-ink/30 leading-none select-none"
         >
           “
         </span>
-        <p className="font-body italic text-base sm:text-lg md:text-xl text-ink-soft leading-snug">
+        <p className="font-body italic text-base sm:text-lg leading-snug text-ink-soft">
           {word.definition || 'no definition on file'}
         </p>
         <span
           aria-hidden="true"
-          className="absolute right-0 -bottom-6 sm:-bottom-7 font-display text-4xl sm:text-5xl text-ink/35 leading-none select-none"
+          className="absolute right-0 -bottom-5 sm:-bottom-6 font-display text-3xl sm:text-4xl text-ink/30 leading-none select-none"
         >
           ”
         </span>
       </div>
 
-      {/* Primary CTA */}
+      {/* Primary CTA — sans, clean */}
       <button
         type="button"
         onClick={onNext}
-        className="mt-8 sm:mt-10 font-receipt text-[11px] sm:text-xs uppercase tracking-[0.32em] px-8 sm:px-10 py-3.5 sm:py-4 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[2px] active:translate-y-[2px]"
+        className="mt-7 sm:mt-9 text-sm font-semibold uppercase tracking-[0.16em] px-7 py-3 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[2px] active:translate-y-[2px] rounded-sm"
       >
-        next word →
+        Next word →
       </button>
 
-      {/* Footer with rules */}
-      <div className="mt-6 flex items-center gap-3">
-        <span className="h-px w-8 bg-ink/35" />
-        <p className="font-receipt text-[10px] uppercase tracking-[0.22em] text-ink-mute whitespace-nowrap">
-          {totalCount > 1 ? (
-            <>
-              + {totalCount - 1} more
-              <span className="mx-2 text-ink/30">·</span>
-              <button
-                type="button"
-                onClick={onShowAll}
-                className="underline decoration-dotted underline-offset-[3px] hover:text-ink transition"
-              >
-                browse all
-              </button>
-            </>
-          ) : (
-            <span>last word standing</span>
-          )}
-        </p>
-        <span className="h-px w-8 bg-ink/35" />
-      </div>
+      {/* Footer */}
+      <p className="mt-5 text-xs text-ink-mute">
+        {totalCount > 1 ? (
+          <>
+            <span className="text-ink/40">·</span> {totalCount - 1} more
+            available <span className="text-ink/40">·</span>{' '}
+            <button
+              type="button"
+              onClick={onShowAll}
+              className="font-medium underline decoration-dotted underline-offset-[3px] hover:text-ink transition"
+            >
+              browse all
+            </button>{' '}
+            <span className="text-ink/40">·</span>
+          </>
+        ) : (
+          <>last word standing</>
+        )}
+      </p>
     </div>
   );
 }
@@ -363,14 +313,20 @@ function HeroView({
 
 function GridView({
   visible,
+  page,
+  pageCount,
+  setPage,
   onPick,
 }: {
   visible: WordResult[];
+  page: number;
+  pageCount: number;
+  setPage: (n: number | ((p: number) => number)) => void;
   onPick: (word: string) => void;
 }) {
   return (
-    <div className="flex-1 px-4 sm:px-6 py-4 sm:py-5">
-      <ul className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+    <div className="flex-1 flex flex-col px-4 sm:px-6 py-4 sm:py-5">
+      <ul className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 flex-1">
         {visible.map((r) => (
           <li key={r.word}>
             <button
@@ -379,16 +335,42 @@ function GridView({
               className="group w-full h-full text-left bg-paper border border-ink/70 rounded-sm shadow-[2px_2px_0_0_rgba(26,26,26,0.85)] hover:shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] transition-all px-3 py-2.5"
               aria-label={`Use the word ${r.word}`}
             >
-              <div className="font-display text-lg sm:text-xl font-extrabold tracking-tight text-ink lowercase leading-none">
+              <div className="font-display text-lg sm:text-xl font-black tracking-tight text-ink lowercase leading-none">
                 {r.word}
               </div>
-              <p className="mt-1.5 font-body italic text-xs sm:text-[13px] text-ink-soft leading-snug line-clamp-2">
+              <p className="mt-1.5 font-body italic text-xs sm:text-sm text-ink-soft leading-snug line-clamp-2">
                 {r.definition || '— no definition —'}
               </p>
             </button>
           </li>
         ))}
       </ul>
+
+      {pageCount > 1 && (
+        <div className="mt-4 flex items-center justify-center gap-3 text-xs font-medium">
+          <button
+            type="button"
+            className="px-3 py-1.5 border border-ink/70 rounded hover:bg-ink hover:text-paper transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink"
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            disabled={page === 0}
+            aria-label="Previous page"
+          >
+            ‹ Prev
+          </button>
+          <span className="text-ink-mute tabular-nums">
+            Page {page + 1} of {pageCount}
+          </span>
+          <button
+            type="button"
+            className="px-3 py-1.5 border border-ink/70 rounded hover:bg-ink hover:text-paper transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink"
+            onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
+            disabled={page >= pageCount - 1}
+            aria-label="Next page"
+          >
+            Next ›
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -405,7 +387,7 @@ function EmptyState({
   if (!dictionaryReady) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="font-receipt text-[11px] uppercase tracking-[0.22em] text-ink-mute">
+        <p className="text-xs uppercase tracking-[0.18em] text-ink-mute">
           opening the dictionary…
         </p>
       </div>
@@ -414,7 +396,7 @@ function EmptyState({
   if (letterCount === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-4">
-        <p className="font-display text-3xl sm:text-4xl text-ink leading-none">
+        <p className="font-display text-3xl sm:text-4xl font-black text-ink leading-none">
           Pour yourself a pint.
         </p>
         <p className="font-body italic text-base sm:text-lg text-ink-mute pulse-up">
@@ -425,7 +407,7 @@ function EmptyState({
   }
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-4">
-      <p className="font-display text-2xl sm:text-3xl text-ink leading-none">
+      <p className="font-display text-2xl sm:text-3xl font-black text-ink leading-none">
         No words yet.
       </p>
       <p className="font-body italic text-base text-ink-mute pulse-up">

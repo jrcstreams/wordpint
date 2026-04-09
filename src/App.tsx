@@ -4,7 +4,6 @@ import { loadWordIndex } from './words/loader';
 import { findWords } from './words/findWords';
 import { PhysicsStage, type PhysicsStageHandle } from './physics/PhysicsStage';
 import { BarTap } from './ui/BarTap';
-import { PourHint } from './ui/PourHint';
 import { WordsPanel } from './ui/WordsPanel';
 import { HistoryStrip } from './ui/HistoryStrip';
 import { DictionaryBanner } from './ui/DictionaryBanner';
@@ -63,49 +62,39 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-full bg-paper text-ink">
-      {/* ============ TOP: bar / pour stage ============ */}
-      <div className="relative basis-[44%] sm:basis-1/2 grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-4 border-ink">
-        <PhysicsStage ref={stageRef} />
-        <BarTap
-          onStart={() => stageRef.current?.startPour()}
-          onStop={() => stageRef.current?.stopPour()}
-          showHint={showTapHint}
-        />
-        <PourHint visible={showTapHint && dictionaryStatus !== 'error'} />
-        <DictionaryBanner status={dictionaryStatus} onRetry={loadDictionary} />
-
-        {/* ============ MASTHEAD ============ */}
-        <div className="absolute top-4 sm:top-6 left-4 sm:left-7 pointer-events-none">
-          {/* Eyebrow */}
-          <div className="flex items-center gap-2">
-            <span className="h-px w-3 bg-ink/45" />
-            <span className="font-receipt text-[9px] sm:text-[10px] uppercase tracking-[0.4em] text-ink-mute leading-none">
-              est. 2026
-            </span>
-            <span className="h-px w-3 bg-ink/45" />
-          </div>
-
-          {/* Title with inline italic "of" */}
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-ink leading-[0.88] mt-2">
+      {/* ============ TOP NAV ============ */}
+      <header className="shrink-0 border-b-2 border-ink bg-paper px-4 sm:px-6 py-3 sm:py-3.5 flex items-baseline justify-between gap-4">
+        <div className="flex items-baseline gap-3 sm:gap-5 min-w-0">
+          <h1 className="font-display text-2xl sm:text-3xl md:text-[2rem] font-black tracking-tight text-ink leading-none whitespace-nowrap">
             Pint{' '}
             <span className="font-body italic font-normal text-[0.55em] text-ink-soft align-middle">
               of
             </span>{' '}
             Words
           </h1>
-
-          {/* Tagline with rules */}
-          <div className="flex items-center gap-2 mt-2.5">
-            <span className="h-px w-6 bg-ink/45" />
-            <p className="font-body italic text-xs sm:text-sm text-ink-soft leading-none whitespace-nowrap">
-              pour a pint, learn a word
-            </p>
-            <span className="h-px w-6 bg-ink/45" />
-          </div>
+          <p className="hidden md:block font-body italic text-sm text-ink-mute leading-none whitespace-nowrap">
+            pour a pint, learn a word
+          </p>
         </div>
+        <div className="hidden sm:flex items-center gap-3">
+          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink-mute">
+            est. 2026
+          </span>
+        </div>
+      </header>
+
+      {/* ============ POUR STAGE ============ */}
+      <div className="relative basis-[40%] sm:basis-[44%] grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink">
+        <PhysicsStage ref={stageRef} />
+        <BarTap
+          onStart={() => stageRef.current?.startPour()}
+          onStop={() => stageRef.current?.stopPour()}
+          showHint={showTapHint}
+        />
+        <DictionaryBanner status={dictionaryStatus} onRetry={loadDictionary} />
       </div>
 
-      {/* ============ BOTTOM: words & receipt ============ */}
+      {/* ============ WORDS + TAB ============ */}
       <div className="flex-1 min-h-0 flex flex-col">
         <WordsPanel
           results={currentResults}

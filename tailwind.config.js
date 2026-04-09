@@ -21,9 +21,15 @@ export default {
         },
       },
       fontFamily: {
+        sans: [
+          'Inter',
+          'system-ui',
+          '-apple-system',
+          'Segoe UI',
+          'sans-serif',
+        ],
         display: ['"Playfair Display"', 'Georgia', 'serif'],
         body: ['"EB Garamond"', 'Georgia', 'serif'],
-        receipt: ['"Special Elite"', 'Courier New', 'monospace'],
       },
     },
   },
