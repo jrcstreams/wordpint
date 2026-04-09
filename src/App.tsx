@@ -76,7 +76,12 @@ export default function App() {
           <h1 className="text-2xl sm:text-3xl md:text-[2rem] font-black tracking-tight text-ink leading-none whitespace-nowrap">
             WordPint
           </h1>
-          <p className="text-[11px] sm:text-[13px] font-medium text-ink-mute leading-none whitespace-nowrap">
+          {/* Inter's metrics put a small tagline's visual center slightly
+              ABOVE the title's visual center when both are box-centered
+              (items-center). translate-y nudges the visible text down so
+              the lowercase mid-line of the tagline lines up with the
+              lowercase mid-line of "WordPint". */}
+          <p className="text-[11px] sm:text-[13px] font-medium text-ink-mute leading-none whitespace-nowrap translate-y-[1.5px] sm:translate-y-[2px] md:translate-y-[3px]">
             Pour a Pint, Learn a Word
           </p>
         </div>
