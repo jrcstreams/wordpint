@@ -4,16 +4,17 @@ import { computeTapAllowance } from '../physics/sizing';
 interface BarTapProps {
   onStart: () => void;
   onStop: () => void;
-  /** True until the user has poured at least once — drives the glow ring. */
+  /** True until the user has poured at least once — drives the glow + tooltip. */
   showHint: boolean;
 }
 
 /**
- * A monochrome wooden draft tap. The "head" is a vertical grip with a
- * spherical knob on top, an inset cream panel with an italic-serif "P"
- * monogram, and decorative collars top and bottom. Below the grip sits
- * a chrome body and an angled spout. Press and hold to pour; the entire
- * head pivots forward at the body collar.
+ * A monochrome draft tap whose handle paddle IS the Pint of Words brand
+ * placement. Stacked "PINT / of / WORDS" wordmark with ornaments inside a
+ * double-framed cream paddle, mounted on a chrome body and angled spout.
+ *
+ * Press and hold the assembly to pour; the entire branded head pivots
+ * forward at the body collar like a real beer tap.
  */
 export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -50,6 +51,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
     [onStop, pouring],
   );
 
+  // viewBox is 200×260; aspect ratio drives the wrapper width.
   const aspect = 200 / 260;
   const svgWidth = tapHeight * aspect;
 
@@ -65,7 +67,7 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
         onPointerUp={handleUp}
         onPointerCancel={handleUp}
         onPointerLeave={handleUp}
-        aria-label="Draft tap — press and hold to pour letters"
+        aria-label="Draft tap — press and hold the handle to pour letters"
         aria-pressed={pouring}
         className={`pointer-events-auto select-none touch-none cursor-pointer relative w-full h-full bg-transparent border-0 p-0 ${
           pouring ? 'tap-pouring' : ''
@@ -81,130 +83,155 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
         >
           {/* ============ HANDLE GROUP (pivots when pouring) ============ */}
           <g className="tap-handle">
-            {/* Sphere knob */}
-            <circle cx="100" cy="14" r="13" fill="#1a1a1a" />
-            <ellipse
-              cx="96"
-              cy="9.5"
-              rx="4"
-              ry="2.5"
-              fill="rgba(255,255,255,0.32)"
+            {/* Outer paddle (black) */}
+            <rect
+              x="50"
+              y="2"
+              width="100"
+              height="124"
+              rx="10"
+              fill="#1a1a1a"
             />
 
-            {/* Knob neck */}
-            <rect x="93" y="26" width="14" height="5" fill="#1a1a1a" />
+            {/* Cream inset */}
+            <rect
+              x="56"
+              y="8"
+              width="88"
+              height="112"
+              rx="5"
+              fill="#fbf7ec"
+              stroke="#1a1a1a"
+              strokeWidth="1.5"
+            />
 
-            {/* Top decorative collar */}
-            <rect x="80" y="31" width="40" height="7" rx="1.5" fill="#1a1a1a" />
-            <line
-              x1="83"
-              y1="34.5"
-              x2="117"
-              y2="34.5"
-              stroke="#fbf7ec"
+            {/* Inner thin frame ornament */}
+            <rect
+              x="60"
+              y="12"
+              width="80"
+              height="104"
+              rx="3"
+              fill="none"
+              stroke="#1a1a1a"
               strokeWidth="0.6"
             />
 
-            {/* Wooden vertical grip — outer */}
-            <rect x="74" y="38" width="52" height="92" rx="8" fill="#1a1a1a" />
-
-            {/* Inset cream panel */}
-            <rect
-              x="80"
-              y="44"
-              width="40"
-              height="80"
-              rx="4"
-              fill="#fbf7ec"
-              stroke="#1a1a1a"
-              strokeWidth="1.4"
-            />
-
-            {/* Top horizontal rule on panel */}
-            <line
-              x1="84"
-              y1="52"
-              x2="116"
-              y2="52"
-              stroke="#1a1a1a"
-              strokeWidth="0.7"
-            />
-            {/* Bottom horizontal rule on panel */}
-            <line
-              x1="84"
-              y1="116"
-              x2="116"
-              y2="116"
-              stroke="#1a1a1a"
-              strokeWidth="0.7"
-            />
-
-            {/* Italic serif monogram */}
+            {/* Top star */}
             <text
               x="100"
-              y="93"
+              y="29"
+              textAnchor="middle"
+              fontFamily="Georgia, serif"
+              fontSize="13"
+              fill="#1a1a1a"
+            >
+              ✦
+            </text>
+
+            {/* PINT */}
+            <text
+              x="100"
+              y="54"
               textAnchor="middle"
               fontFamily='"Playfair Display", Georgia, serif'
-              fontSize="44"
+              fontSize="22"
               fontWeight="900"
+              fill="#1a1a1a"
+              letterSpacing="1"
+            >
+              PINT
+            </text>
+
+            {/* "of" with flanking rules */}
+            <line
+              x1="68"
+              y1="64"
+              x2="90"
+              y2="64"
+              stroke="#1a1a1a"
+              strokeWidth="0.7"
+            />
+            <text
+              x="100"
+              y="69"
+              textAnchor="middle"
+              fontFamily='"EB Garamond", Georgia, serif'
+              fontSize="13"
               fontStyle="italic"
               fill="#1a1a1a"
             >
-              P
+              of
+            </text>
+            <line
+              x1="110"
+              y1="64"
+              x2="132"
+              y2="64"
+              stroke="#1a1a1a"
+              strokeWidth="0.7"
+            />
+
+            {/* WORDS */}
+            <text
+              x="100"
+              y="92"
+              textAnchor="middle"
+              fontFamily='"Playfair Display", Georgia, serif'
+              fontSize="22"
+              fontWeight="900"
+              fill="#1a1a1a"
+              letterSpacing="1"
+            >
+              WORDS
             </text>
 
-            {/* Bottom decorative collar */}
-            <rect
-              x="80"
-              y="130"
-              width="40"
-              height="7"
-              rx="1.5"
+            {/* Bottom star */}
+            <text
+              x="100"
+              y="111"
+              textAnchor="middle"
+              fontFamily="Georgia, serif"
+              fontSize="13"
               fill="#1a1a1a"
-            />
-            <line
-              x1="83"
-              y1="133.5"
-              x2="117"
-              y2="133.5"
-              stroke="#fbf7ec"
-              strokeWidth="0.6"
-            />
+            >
+              ✦
+            </text>
 
             {/* Lower neck connecting to body collar */}
-            <rect x="93" y="137" width="14" height="6" fill="#1a1a1a" />
+            <rect x="93" y="126" width="14" height="6" fill="#1a1a1a" />
           </g>
 
           {/* ============ TAP BODY (static) ============ */}
           {/* Mounting collar between handle and body */}
-          <rect x="78" y="143" width="44" height="11" rx="2" fill="#1a1a1a" />
+          <rect x="78" y="132" width="44" height="11" rx="2" fill="#1a1a1a" />
 
           {/* Chrome cylinder body */}
-          <rect x="84" y="154" width="32" height="62" rx="6" fill="#1a1a1a" />
+          <rect x="84" y="143" width="32" height="62" rx="6" fill="#1a1a1a" />
           {/* Vertical highlight stripe */}
           <rect
             x="87"
-            y="158"
+            y="147"
             width="4"
             height="54"
             rx="2"
             fill="rgba(255,255,255,0.2)"
           />
-          {/* Decorative horizontal bands */}
-          <rect x="84" y="166" width="32" height="2" fill="#fbf7ec" />
-          <rect x="84" y="202" width="32" height="2" fill="#fbf7ec" />
+          {/* Decorative bands */}
+          <rect x="84" y="155" width="32" height="2" fill="#fbf7ec" />
+          <rect x="84" y="191" width="32" height="2" fill="#fbf7ec" />
 
           {/* ============ SPOUT ============ */}
-          <path d="M84,216 L80,232 L120,232 L116,216 Z" fill="#1a1a1a" />
-          <rect x="84" y="232" width="32" height="6" rx="1" fill="#1a1a1a" />
-          <ellipse cx="100" cy="240" rx="13" ry="2" fill="#3a3328" />
+          <path d="M84,205 L80,221 L120,221 L116,205 Z" fill="#1a1a1a" />
+          <rect x="84" y="221" width="32" height="6" rx="1" fill="#1a1a1a" />
+          <ellipse cx="100" cy="229" rx="13" ry="2" fill="#3a3328" />
 
           {/* Idle drip */}
           {!pouring && (
             <circle
               className="tap-drip"
               cx="100"
-              cy="242"
+              cy="231"
               r="2"
               fill="#e8a838"
               opacity="0.55"
@@ -215,20 +242,20 @@ export function BarTap({ onStart, onStop, showHint }: BarTapProps) {
           <rect
             className="tap-stream"
             x="96"
-            y="244"
+            y="233"
             width="8"
-            height="42"
+            height="34"
             rx="3"
             fill="#e8a838"
             opacity="0"
           />
         </svg>
 
-        {/* Hint glow ring around the handle (only before first pour) */}
+        {/* Hint glow ring around the paddle (only before first pour) */}
         {showHint && (
           <span
             aria-hidden="true"
-            className="hint-glow absolute left-1/2 top-[31%] -translate-x-1/2 -translate-y-1/2 w-[60%] h-[55%] rounded-full pointer-events-none"
+            className="hint-glow absolute left-1/2 top-[24%] -translate-x-1/2 -translate-y-1/2 w-[110%] h-[55%] rounded-full pointer-events-none"
           />
         )}
       </button>

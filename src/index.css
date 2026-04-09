@@ -72,8 +72,8 @@ body {
 }
 
 .tap-pouring .tap-handle {
-  /* Pivot at the body collar (just below the wooden grip) */
-  transform-origin: 100px 143px;
+  /* Pivot at the body collar (just below the branded paddle) */
+  transform-origin: 100px 132px;
   animation: tap-tilt 0.22s ease-out forwards;
 }
 
@@ -110,15 +110,15 @@ body {
   animation: drip-pulse 2.4s ease-in-out infinite;
 }
 
-/* Hint glow around the handle (only before first pour) */
+/* Hint glow around the paddle (only before first pour) */
 @keyframes hint-pulse {
   0%,
   100% {
     transform: translate(-50%, -50%) scale(1);
-    opacity: 0.5;
+    opacity: 0.55;
   }
   50% {
-    transform: translate(-50%, -50%) scale(1.16);
+    transform: translate(-50%, -50%) scale(1.18);
     opacity: 0;
   }
 }
@@ -126,26 +126,57 @@ body {
 .hint-glow {
   background: radial-gradient(
     ellipse,
-    rgba(232, 168, 56, 0.55) 0%,
-    rgba(232, 168, 56, 0.18) 45%,
+    rgba(232, 168, 56, 0.6) 0%,
+    rgba(232, 168, 56, 0.2) 45%,
     rgba(232, 168, 56, 0) 70%
   );
   animation: hint-pulse 1.8s ease-out infinite;
 }
 
-/* Subtle floating idle motion on the whole tap when waiting */
 @keyframes tap-bob {
   0%,
   100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
   }
 }
 
 .tap-hint:not(.tap-pouring) svg {
   animation: tap-bob 2.6s ease-in-out infinite;
+}
+
+/* ----- Pour hint tooltip ------------------------------------------------ */
+
+@keyframes hint-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+.hint-tooltip {
+  animation: hint-tooltip-in 0.4s ease-out 0.3s backwards;
+}
+
+@keyframes hint-arrow-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-4px);
+  }
+}
+
+.hint-arrow {
+  display: inline-block;
+  animation: hint-arrow-nudge 1.4s ease-in-out infinite;
 }
 
 /* ----- Empty-state arrow pulse ----------------------------------------- */
@@ -166,12 +197,12 @@ body {
   animation: pulse-up 1.6s ease-in-out infinite;
 }
 
-/* ----- Hero card transitions ------------------------------------------- */
+/* ----- Hero card transition -------------------------------------------- */
 
 @keyframes hero-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;

@@ -20,10 +20,6 @@ const SORT_LABELS: Record<SortMode, string> = {
   alpha: 'A → Z',
 };
 
-/**
- * Stable shuffle seeded by the result-set fingerprint so the order doesn't
- * churn while browsing — but does refresh when the cup changes.
- */
 function seededShuffle<T>(arr: T[], seed: number): T[] {
   const out = arr.slice();
   let state = seed || 1;
@@ -43,6 +39,28 @@ function fingerprint(results: WordResult[]): number {
     (results[results.length - 1].word.charCodeAt(0) ?? 0)
   );
 }
+
+/* ============================================================================
+ * Layout:
+ *
+ *   ┌──── HEADER ────────────────────────────────────┐
+ *   │   ── WORDS ON TAP ──                           │
+ *   │   X words on offer                             │
+ *   ├──── BODY ──────────────────────────────────────┤
+ *   │                                                │
+ *   │              elephant                          │
+ *   │       "a large mammal having a long..."        │
+ *   │              ┌─────────┐                       │
+ *   │              │ NEXT  → │                       │
+ *   │              └─────────┘                       │
+ *   │           ── + N more · all ──                 │
+ *   │                                                │
+ *   ├──── FOOTER ────────────────────────────────────┤
+ *   │   sort ▾    browse all                empty   │
+ *   └────────────────────────────────────────────────┘
+ *
+ * No card chrome on the hero — pure typography on the paper grain.
+ * ========================================================================== */
 
 export function WordsPanel({
   results,
@@ -88,22 +106,31 @@ export function WordsPanel({
 
   const heroWord = sorted[0] ?? null;
 
+  const status =
+    sorted.length > 0
+      ? `${sorted.length} word${sorted.length === 1 ? '' : 's'} on offer`
+      : letterCount === 0
+        ? 'awaiting your pour'
+        : 'pour more letters';
+
   return (
     <section className="relative flex-1 min-h-0 bg-paper-grain border-t-2 border-ink flex flex-col">
-      <Header
-        sort={sort}
-        setSort={setSort}
-        letterCount={letterCount}
-        resultCount={sorted.length}
-        showAll={showAll}
-        setShowAll={setShowAll}
-        page={page}
-        pageCount={pageCount}
-        setPage={setPage}
-        onEmptyCup={onEmptyCup}
-      />
+      {/* ============ HEADER ============ */}
+      <header className="px-4 sm:px-6 pt-5 pb-4 text-center border-b border-ink/25">
+        <div className="flex items-center justify-center gap-3">
+          <span className="h-px w-10 sm:w-16 bg-ink/45" />
+          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-ink leading-none">
+            Words on Tap
+          </h2>
+          <span className="h-px w-10 sm:w-16 bg-ink/45" />
+        </div>
+        <p className="font-receipt text-[10px] sm:text-[11px] uppercase tracking-[0.28em] text-ink-mute mt-2">
+          {status}
+        </p>
+      </header>
 
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      {/* ============ BODY ============ */}
+      <div className="flex-1 min-h-0 overflow-y-auto flex">
         {sorted.length === 0 ? (
           <EmptyState
             letterCount={letterCount}
@@ -123,13 +150,27 @@ export function WordsPanel({
           />
         )}
       </div>
+
+      {/* ============ FOOTER ============ */}
+      <Footer
+        sort={sort}
+        setSort={setSort}
+        letterCount={letterCount}
+        resultCount={sorted.length}
+        showAll={showAll}
+        setShowAll={setShowAll}
+        page={page}
+        pageCount={pageCount}
+        setPage={setPage}
+        onEmptyCup={onEmptyCup}
+      />
     </section>
   );
 }
 
-/* ============================== Header ============================== */
+/* ============================== Footer ============================== */
 
-function Header({
+function Footer({
   sort,
   setSort,
   letterCount,
@@ -152,88 +193,72 @@ function Header({
   setPage: (n: number | ((p: number) => number)) => void;
   onEmptyCup: () => void;
 }) {
-  const status =
-    resultCount > 0
-      ? `${resultCount} word${resultCount === 1 ? '' : 's'} on offer`
-      : letterCount === 0
-        ? 'awaiting your pour'
-        : 'pour more letters';
-
   return (
-    <header className="px-4 sm:px-6 pt-4 pb-3 border-b border-ink/25">
-      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
-        {/* Title block */}
-        <div className="min-w-0">
-          <h2 className="font-display text-2xl sm:text-[1.7rem] leading-none tracking-tight text-ink">
-            Words on the menu
-          </h2>
-          <p className="font-receipt text-[10px] uppercase tracking-[0.22em] text-ink-mute mt-1">
-            {status}
-          </p>
-        </div>
+    <footer className="px-4 sm:px-6 py-2.5 border-t border-ink/25 flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
+      {/* Left group */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Sort */}
+        <label className="flex items-center gap-1.5 font-receipt text-[10px] uppercase tracking-[0.22em] text-ink-mute">
+          <span className="hidden sm:inline">sort</span>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortMode)}
+            className="font-receipt text-[10px] uppercase tracking-[0.22em] bg-paper border border-ink/40 rounded px-1.5 py-1 focus:outline-none focus:border-ink hover:border-ink transition-colors"
+            aria-label="Sort words"
+          >
+            {(Object.keys(SORT_LABELS) as SortMode[]).map((m) => (
+              <option key={m} value={m}>
+                {SORT_LABELS[m]}
+              </option>
+            ))}
+          </select>
+        </label>
 
-        {/* Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2 ml-auto">
-          {/* Sort */}
-          <label className="flex items-center gap-1.5 font-receipt text-[10px] uppercase tracking-[0.18em] text-ink-mute">
-            <span className="hidden sm:inline">sort</span>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortMode)}
-              className="font-receipt text-[10px] uppercase tracking-[0.18em] bg-paper border border-ink/40 rounded px-1.5 py-1 focus:outline-none focus:border-ink hover:border-ink transition-colors"
-              aria-label="Sort words"
-            >
-              {(Object.keys(SORT_LABELS) as SortMode[]).map((m) => (
-                <option key={m} value={m}>
-                  {SORT_LABELS[m]}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          {/* View toggle */}
-          {resultCount > 0 && (
-            <GhostButton onClick={() => setShowAll(!showAll)}>
-              {showAll ? 'one at a time' : `browse all`}
-            </GhostButton>
-          )}
-
-          {/* Empty cup */}
-          {letterCount > 0 && (
-            <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
-              empty cup
-            </GhostButton>
-          )}
-
-          {/* Pagination */}
-          {showAll && pageCount > 1 && (
-            <div className="flex items-center gap-1.5 font-receipt text-[10px] uppercase tracking-[0.18em] text-ink-mute ml-1">
-              <button
-                type="button"
-                className="px-1.5 py-1 border border-ink/40 rounded hover:bg-ink hover:text-paper transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink-mute"
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                disabled={page === 0}
-                aria-label="Previous page"
-              >
-                ‹
-              </button>
-              <span className="tabular-nums">
-                {page + 1}/{pageCount}
-              </span>
-              <button
-                type="button"
-                className="px-1.5 py-1 border border-ink/40 rounded hover:bg-ink hover:text-paper transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink-mute"
-                onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
-                disabled={page >= pageCount - 1}
-                aria-label="Next page"
-              >
-                ›
-              </button>
-            </div>
-          )}
-        </div>
+        {/* View toggle */}
+        {resultCount > 0 && (
+          <GhostButton onClick={() => setShowAll(!showAll)}>
+            {showAll ? 'one at a time' : 'browse all'}
+          </GhostButton>
+        )}
       </div>
-    </header>
+
+      {/* Right group */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Pagination */}
+        {showAll && pageCount > 1 && (
+          <div className="flex items-center gap-1.5 font-receipt text-[10px] uppercase tracking-[0.22em] text-ink-mute">
+            <button
+              type="button"
+              className="px-1.5 py-1 border border-ink/40 rounded hover:bg-ink hover:text-paper transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink-mute"
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={page === 0}
+              aria-label="Previous page"
+            >
+              ‹
+            </button>
+            <span className="tabular-nums">
+              {page + 1}/{pageCount}
+            </span>
+            <button
+              type="button"
+              className="px-1.5 py-1 border border-ink/40 rounded hover:bg-ink hover:text-paper transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink-mute"
+              onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
+              disabled={page >= pageCount - 1}
+              aria-label="Next page"
+            >
+              ›
+            </button>
+          </div>
+        )}
+
+        {/* Empty cup */}
+        {letterCount > 0 && (
+          <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+            empty cup
+          </GhostButton>
+        )}
+      </div>
+    </footer>
   );
 }
 
@@ -249,7 +274,7 @@ function GhostButton({
     <button
       type="button"
       onClick={onClick}
-      className="font-receipt text-[10px] uppercase tracking-[0.18em] px-2 py-1 border border-ink/50 rounded hover:bg-ink hover:text-paper transition-colors"
+      className="font-receipt text-[10px] uppercase tracking-[0.22em] px-2.5 py-1 border border-ink/50 rounded hover:bg-ink hover:text-paper transition-colors"
       {...rest}
     >
       {children}
@@ -271,32 +296,47 @@ function HeroView({
   onShowAll: () => void;
 }) {
   return (
-    <div className="h-full flex items-center justify-center px-4 sm:px-6 py-4 sm:py-6">
-      <article
-        key={word.word}
-        className="hero-in w-full max-w-2xl bg-paper border-2 border-ink shadow-[6px_6px_0_0_rgba(26,26,26,0.85)] px-6 sm:px-10 py-7 sm:py-9 flex flex-col items-center text-center"
-      >
-        {/* Word */}
-        <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.88] text-[clamp(2.8rem,8vw,5rem)]">
-          {word.word}
-        </h3>
+    <div
+      key={word.word}
+      className="hero-in flex-1 flex flex-col items-center justify-center text-center px-6 py-6 sm:py-8 max-w-3xl mx-auto w-full"
+    >
+      {/* The word */}
+      <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.85] text-[clamp(3rem,9vw,5.75rem)]">
+        {word.word}
+      </h3>
 
-        {/* Definition */}
-        <p className="mt-5 font-body italic text-base sm:text-lg leading-snug text-ink-soft max-w-xl">
-          {word.definition || '— no definition on file —'}
-        </p>
-
-        {/* Primary action */}
-        <button
-          type="button"
-          onClick={onNext}
-          className="mt-7 sm:mt-8 font-receipt text-[11px] sm:text-xs uppercase tracking-[0.28em] px-7 sm:px-8 py-3 sm:py-3.5 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[2px] active:translate-y-[2px]"
+      {/* Definition with ornamental serif quotes */}
+      <div className="relative mt-6 sm:mt-7 max-w-2xl px-6 sm:px-10">
+        <span
+          aria-hidden="true"
+          className="absolute left-0 -top-3 sm:-top-4 font-display text-4xl sm:text-5xl text-ink/35 leading-none select-none"
         >
-          next word →
-        </button>
+          “
+        </span>
+        <p className="font-body italic text-base sm:text-lg md:text-xl text-ink-soft leading-snug">
+          {word.definition || 'no definition on file'}
+        </p>
+        <span
+          aria-hidden="true"
+          className="absolute right-0 -bottom-6 sm:-bottom-7 font-display text-4xl sm:text-5xl text-ink/35 leading-none select-none"
+        >
+          ”
+        </span>
+      </div>
 
-        {/* Footer */}
-        <div className="mt-5 font-receipt text-[10px] uppercase tracking-[0.22em] text-ink-mute">
+      {/* Primary CTA */}
+      <button
+        type="button"
+        onClick={onNext}
+        className="mt-8 sm:mt-10 font-receipt text-[11px] sm:text-xs uppercase tracking-[0.32em] px-8 sm:px-10 py-3.5 sm:py-4 border-2 border-ink bg-ink text-paper hover:bg-paper hover:text-ink transition shadow-[3px_3px_0_0_rgba(26,26,26,0.85)] active:shadow-[1px_1px_0_0_rgba(26,26,26,0.85)] active:translate-x-[2px] active:translate-y-[2px]"
+      >
+        next word →
+      </button>
+
+      {/* Footer with rules */}
+      <div className="mt-6 flex items-center gap-3">
+        <span className="h-px w-8 bg-ink/35" />
+        <p className="font-receipt text-[10px] uppercase tracking-[0.22em] text-ink-mute whitespace-nowrap">
           {totalCount > 1 ? (
             <>
               + {totalCount - 1} more
@@ -304,7 +344,7 @@ function HeroView({
               <button
                 type="button"
                 onClick={onShowAll}
-                className="underline decoration-dotted underline-offset-2 hover:text-ink transition"
+                className="underline decoration-dotted underline-offset-[3px] hover:text-ink transition"
               >
                 browse all
               </button>
@@ -312,8 +352,9 @@ function HeroView({
           ) : (
             <span>last word standing</span>
           )}
-        </div>
-      </article>
+        </p>
+        <span className="h-px w-8 bg-ink/35" />
+      </div>
     </div>
   );
 }
@@ -328,7 +369,7 @@ function GridView({
   onPick: (word: string) => void;
 }) {
   return (
-    <div className="px-4 sm:px-6 py-4">
+    <div className="flex-1 px-4 sm:px-6 py-4 sm:py-5">
       <ul className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {visible.map((r) => (
           <li key={r.word}>
@@ -363,8 +404,8 @@ function EmptyState({
 }) {
   if (!dictionaryReady) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <p className="font-receipt text-xs uppercase tracking-[0.22em] text-ink-mute">
+      <div className="flex-1 flex items-center justify-center">
+        <p className="font-receipt text-[11px] uppercase tracking-[0.22em] text-ink-mute">
           opening the dictionary…
         </p>
       </div>
@@ -372,7 +413,7 @@ function EmptyState({
   }
   if (letterCount === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center gap-3 text-center px-4">
+      <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-4">
         <p className="font-display text-3xl sm:text-4xl text-ink leading-none">
           Pour yourself a pint.
         </p>
@@ -383,7 +424,7 @@ function EmptyState({
     );
   }
   return (
-    <div className="h-full flex flex-col items-center justify-center gap-3 text-center px-4">
+    <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-4">
       <p className="font-display text-2xl sm:text-3xl text-ink leading-none">
         No words yet.
       </p>
