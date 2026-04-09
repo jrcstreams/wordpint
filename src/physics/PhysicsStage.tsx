@@ -108,11 +108,23 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
         100,
         world.height - tapTop - tapAllowance - tapToCupGap - cupBottomMargin,
       );
+      // Glass top width: the original height-derived ratio is the floor
+      // (so portrait/mobile is unchanged), but on a wide-but-short bar
+      // region (laptop landscape, ultrawide) we let the glass grow into
+      // the empty horizontal space. Cap at 1.1× height so the silhouette
+      // still reads as a pint, not a punch bowl, and at 32% of stage
+      // width so it never crowds the bar wood.
+      const glassNaturalW = glassH * 0.78;
+      const glassW = Math.max(
+        glassNaturalW,
+        Math.min(world.width * 0.32, glassH * 1.1),
+      );
       const glass = createPintGlass(
         world.world,
         glassCenterX,
         glassBaseY,
         glassH,
+        glassW,
       );
 
       // Sensor uses the visible glass interior as the strict region.
@@ -142,7 +154,9 @@ export const PhysicsStage = forwardRef<PhysicsStageHandle>((_, ref) => {
         spawnX,
         spawnY,
         intervalMs: 90,
-        jitterX: 14,
+        // Spread spawn across ~28% of the glass mouth so letters fan out
+        // across the cup instead of stacking in a column at center.
+        jitterX: Math.max(14, glassW * 0.14),
         onSpawn: () => {
           if (sensors.isFull()) dispenser.stop();
         },
