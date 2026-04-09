@@ -113,6 +113,15 @@ export default function App() {
 
       {/* ============ WORDS + TAB (seamless flow) ============ */}
       <div className="flex-1 min-h-0 flex flex-col bg-paper-grain">
+        {/* How it works — between the cup and the words section */}
+        <div className="shrink-0 px-4 sm:px-6 pt-3 pb-1 text-center">
+          <p className="text-[11px] sm:text-xs text-ink-mute leading-snug max-w-2xl mx-auto">
+            Hold the tap handle to pour letters into the cup. Words that can be
+            spelled with that combo of letters will then appear. Choosing{' '}
+            <span className="font-semibold text-ink-soft">"Next Word"</span>{' '}
+            removes those letters from the cup.
+          </p>
+        </div>
         {currentResults.length > 0 && (
           <SectionDivider>Words on Tap</SectionDivider>
         )}

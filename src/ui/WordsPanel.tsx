@@ -85,7 +85,7 @@ export function WordsPanel({
   const heroWord = sorted[0] ?? null;
 
   return (
-    <div className="relative flex-1 min-h-0 flex flex-col overflow-y-auto">
+    <div className="relative flex-1 min-h-0 flex flex-col">
       {sorted.length === 0 ? (
         <EmptyState
           letterCount={letterCount}
@@ -145,39 +145,41 @@ function HeroView({
   return (
     <div
       key={word.word}
-      className="hero-in my-auto flex flex-col items-center text-center px-5 py-4 max-w-2xl mx-auto w-full"
+      className="hero-in flex-1 min-h-0 flex flex-col"
     >
-      {/* Featured word */}
-      <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.75rem,4.5vw,2.75rem)]">
-        {word.word}
-      </h3>
+      {/* Top zone: word + definition. Scrolls if too tall, never pushes
+          the controls below it off-screen. */}
+      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col px-5">
+        <div className="my-auto text-center w-full max-w-xl mx-auto py-3">
+          <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.75rem,4.5vw,2.75rem)]">
+            {word.word}
+          </h3>
+          <p className="mt-3 max-w-md mx-auto font-body text-base sm:text-lg leading-snug text-ink-soft">
+            {word.definition || 'no definition on file'}
+          </p>
+        </div>
+      </div>
 
-      {/* Definition — Garamond regular, no italic */}
-      <p className="mt-2 max-w-md font-body text-base sm:text-lg leading-snug text-ink-soft">
-        {word.definition || 'no definition on file'}
-      </p>
-
-      {/* Primary CTA on its own row */}
-      <div className="mt-5 sm:mt-6">
+      {/* Bottom zone: controls + count. Always visible no matter how
+          long the definition is. */}
+      <div className="shrink-0 px-4 sm:px-6 pt-2 pb-3 sm:pt-3 sm:pb-4 flex flex-col items-center gap-2.5 sm:gap-3">
         <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
-      </div>
 
-      {/* Secondary controls on the second row */}
-      <div className="mt-3 sm:mt-4 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
-        <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
-        <SortPill value={sort} onChange={setSort} />
-        {letterCount > 0 && (
-          <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
-            Empty Cup
-          </GhostButton>
-        )}
-      </div>
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+          <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
+          <SortPill value={sort} onChange={setSort} />
+          {letterCount > 0 && (
+            <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+              Empty Cup
+            </GhostButton>
+          )}
+        </div>
 
-      {/* Total count — bigger, more prominent */}
-      <p className="mt-4 sm:mt-5 text-sm sm:text-base text-ink-soft">
-        <span className="font-display font-black text-ink">{totalCount}</span>{' '}
-        word{totalCount === 1 ? '' : 's'} on offer
-      </p>
+        <p className="text-sm sm:text-base text-ink-soft">
+          <span className="font-display font-black text-ink">{totalCount}</span>{' '}
+          word{totalCount === 1 ? '' : 's'} on offer
+        </p>
+      </div>
     </div>
   );
 }
@@ -293,7 +295,7 @@ function GhostButton({
     <button
       type="button"
       onClick={onClick}
-      className="text-xs font-semibold px-3.5 py-2 bg-paper border border-ink/40 hover:bg-ink hover:text-paper hover:border-ink rounded-md transition-colors"
+      className="text-xs font-semibold text-ink px-3.5 py-2 bg-paper border border-ink/40 hover:bg-ink/10 hover:border-ink/60 rounded-md transition-colors"
       {...rest}
     >
       {children}
@@ -313,7 +315,7 @@ function SortPill({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as SortMode)}
-        className="appearance-none text-xs font-semibold bg-paper border border-ink/40 hover:bg-ink hover:text-paper hover:border-ink focus:bg-ink focus:text-paper focus:border-ink rounded-md pl-3.5 pr-9 py-2 cursor-pointer focus:outline-none transition-colors"
+        className="appearance-none text-xs font-semibold text-ink bg-paper border border-ink/40 hover:bg-ink/10 hover:border-ink/60 focus:bg-ink/10 focus:border-ink/60 rounded-md pl-3.5 pr-9 py-2 cursor-pointer focus:outline-none transition-colors"
         aria-label="Sort words"
       >
         {(Object.keys(SORT_LABELS) as SortMode[]).map((m) => (

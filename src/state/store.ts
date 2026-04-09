@@ -73,6 +73,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({
       lettersInGlass: new Map(),
       currentWord: null,
+      history: [],
     }),
 
   setCurrentWord: (word) => set({ currentWord: word }),
