@@ -17,7 +17,7 @@ export function HistoryStrip({ history, onWordClick }: HistoryStripProps) {
   if (history.length === 0) return null;
   const recent = [...history].reverse().slice(0, 8);
   return (
-    <div className="shrink-0 pb-4 sm:pb-5 overflow-x-auto">
+    <div className="shrink-0 pb-3 sm:pb-4 overflow-x-auto">
       <ul className="flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 whitespace-nowrap">
         {recent.map((w, i) => (
           <Fragment key={`${w}-${i}`}>

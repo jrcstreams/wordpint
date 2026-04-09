@@ -101,7 +101,7 @@ export default function App() {
       </header>
 
       {/* ============ POUR STAGE ============ */}
-      <div className="relative basis-[44%] sm:basis-[48%] grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink">
+      <div className="relative basis-[44%] sm:basis-[46%] grow-0 shrink-0 overflow-hidden bg-bar-wood border-b-2 border-ink">
         <PhysicsStage ref={stageRef} />
         <BarTap
           onStart={() => stageRef.current?.startPour()}
@@ -114,9 +114,11 @@ export default function App() {
       {/* ============ WORDS + TAB (seamless flow) ============ */}
       <div className="flex-1 min-h-0 flex flex-col bg-paper-grain">
         {/* How it works — between the cup and the words section.
-            Hidden on mobile to free up vertical space. */}
-        <div className="hidden sm:block shrink-0 px-4 sm:px-6 pt-4 pb-3 text-center">
-          <p className="text-[12px] sm:text-[13px] text-ink-mute leading-snug max-w-xl mx-auto">
+            Hidden on mobile to free up vertical space.
+            Container is centered (mx-auto), text-left so it reads
+            naturally when wrapping to two lines. */}
+        <div className="hidden sm:block shrink-0 px-4 sm:px-6 pt-3 pb-3">
+          <p className="text-[12px] sm:text-[13px] text-ink-mute leading-snug max-w-xl mx-auto text-left">
             Pour letters into the cup — words you can spell will appear below.
             Click{' '}
             <span className="font-semibold text-ink-soft">"Next Word"</span> to

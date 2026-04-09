@@ -147,29 +147,29 @@ function HeroView({
       key={word.word}
       className="hero-in flex-1 min-h-0 flex flex-col"
     >
-      {/* Top zone: word + definition.
-          Scrolls inside its own bounds for very long definitions, so the
-          control bar below NEVER moves regardless of definition length. */}
+      {/* Top zone: word + definition. The definition has a fixed
+          min-height matching its line-clamp-3 max, so the slot the
+          word/def occupies is identical for 1, 2, or 3 line definitions.
+          Combined with the shrink-0 bottom zone below, this means the
+          control bar NEVER moves regardless of definition length. */}
       <div className="flex-1 min-h-0 overflow-y-auto px-5 flex flex-col">
         <div className="my-auto text-center w-full max-w-xl mx-auto py-2">
-          <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.5rem,4vw,2.25rem)]">
+          <h3 className="font-display font-black tracking-tight text-ink lowercase leading-[0.9] text-[clamp(1.4rem,3.8vw,2.125rem)]">
             {word.word}
           </h3>
-          <p className="mt-2.5 max-w-md mx-auto font-body text-sm sm:text-base leading-snug text-ink-soft line-clamp-3">
+          <p className="mt-2 max-w-md mx-auto font-body text-sm sm:text-base leading-snug text-ink-soft line-clamp-3 min-h-[58px] sm:min-h-[66px]">
             {word.definition || 'no definition on file'}
           </p>
         </div>
       </div>
 
-      {/* Bottom zone: controls + count.
-          shrink-0 + border-t. ALWAYS at the same y position regardless
-          of how long the definition is — the user's "baked-in space"
-          for the controls. */}
-      <div className="shrink-0 px-4 pt-3 pb-3 sm:pt-4 sm:pb-4 flex flex-col items-center border-t border-ink/15">
+      {/* Bottom zone: controls + count. shrink-0, always at the same
+          y position. The "baked-in space" for the controls. */}
+      <div className="shrink-0 px-4 pt-2 pb-2.5 sm:pt-2.5 sm:pb-3 flex flex-col items-center border-t border-ink/15">
         <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
 
         {/* Bigger gap above the secondary row, as requested */}
-        <div className="mt-4 sm:mt-5 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+        <div className="mt-3.5 sm:mt-4 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
           <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
           <SortPill value={sort} onChange={setSort} />
           {letterCount > 0 && (
@@ -179,7 +179,7 @@ function HeroView({
           )}
         </div>
 
-        <p className="mt-3 sm:mt-3.5 text-xs sm:text-sm text-ink-soft">
+        <p className="mt-2 sm:mt-2.5 text-xs sm:text-sm text-ink-soft">
           <span className="font-display font-black text-ink">{totalCount}</span>{' '}
           word{totalCount === 1 ? '' : 's'} on offer
         </p>

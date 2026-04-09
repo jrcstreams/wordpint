@@ -11,7 +11,7 @@ interface SectionDividerProps {
  */
 export function SectionDivider({ children }: SectionDividerProps) {
   return (
-    <div className="shrink-0 px-4 pt-2 pb-1.5 sm:pt-2.5 sm:pb-2 flex items-center justify-center gap-3">
+    <div className="shrink-0 px-4 pt-1.5 pb-1 sm:pt-2 sm:pb-1.5 flex items-center justify-center gap-3">
       <span aria-hidden="true" className="h-px flex-1 max-w-[110px] bg-ink/35" />
       <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.22em] text-ink-mute whitespace-nowrap">
         {children}
