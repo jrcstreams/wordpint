@@ -239,21 +239,22 @@ function PouringPlaceholder({
           </p>
         </div>
       </div>
-      <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-2 sm:pt-3 sm:pb-2.5 flex flex-col items-center gap-2 border-t border-ink/15">
+      <div className="shrink-0 pb-3 sm:pb-3.5 flex justify-center">
         <PrimaryButton onClick={() => {}} disabled>
           Next Word →
         </PrimaryButton>
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-          <SmallGhostButton onClick={onShowAll}>
-            Browse All Words
+      </div>
+
+      <div className="shrink-0 px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-center gap-1.5 sm:gap-2 border-t border-ink/15">
+        <SmallGhostButton onClick={onShowAll}>
+          Browse All Words
+        </SmallGhostButton>
+        <SmallSortPill value={sort} onChange={setSort} />
+        {letterCount > 0 && (
+          <SmallGhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+            Empty Cup
           </SmallGhostButton>
-          <SmallSortPill value={sort} onChange={setSort} />
-          {letterCount > 0 && (
-            <SmallGhostButton onClick={onEmptyCup} aria-label="Empty the cup">
-              Empty Cup
-            </SmallGhostButton>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
@@ -339,25 +340,26 @@ function HeroView({
         </div>
       </div>
 
-      {/* Bottom zone: TWO-ROW control bar.
-          Row 1 — primary CTA ("Next Word") centered and prominent.
-          Row 2 — secondary actions at smaller size so they always fit
-          on one line regardless of viewport width. Separating primary
-          from secondary makes the hierarchy scannable at a glance and
-          prevents the row from wrapping on narrow screens. */}
-      <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-2 sm:pt-3 sm:pb-2.5 flex flex-col items-center gap-2 border-t border-ink/15">
+      {/* Primary CTA — lives inside the hero content zone, directly
+          under the word/definition so it reads as part of the featured
+          word, not as a generic toolbar action. */}
+      <div className="shrink-0 pb-3 sm:pb-3.5 flex justify-center">
         <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-          <SmallGhostButton onClick={onShowAll}>
-            Browse All Words
+      </div>
+
+      {/* Secondary actions — below the separator, visually distinct
+          from the hero. Smaller sizing so all three always fit on one
+          line at any viewport width. */}
+      <div className="shrink-0 px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-center gap-1.5 sm:gap-2 border-t border-ink/15">
+        <SmallGhostButton onClick={onShowAll}>
+          Browse All Words
+        </SmallGhostButton>
+        <SmallSortPill value={sort} onChange={setSort} />
+        {letterCount > 0 && (
+          <SmallGhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+            Empty Cup
           </SmallGhostButton>
-          <SmallSortPill value={sort} onChange={setSort} />
-          {letterCount > 0 && (
-            <SmallGhostButton onClick={onEmptyCup} aria-label="Empty the cup">
-              Empty Cup
-            </SmallGhostButton>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
