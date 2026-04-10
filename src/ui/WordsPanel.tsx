@@ -239,17 +239,19 @@ function PouringPlaceholder({
           </p>
         </div>
       </div>
-      <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-3 sm:pt-3 sm:pb-3.5 flex flex-col items-center border-t border-ink/15">
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
-          <PrimaryButton onClick={() => {}} disabled>
-            Next Word →
-          </PrimaryButton>
-          <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
-          <SortPill value={sort} onChange={setSort} />
+      <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-2 sm:pt-3 sm:pb-2.5 flex flex-col items-center gap-2 border-t border-ink/15">
+        <PrimaryButton onClick={() => {}} disabled>
+          Next Word →
+        </PrimaryButton>
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+          <SmallGhostButton onClick={onShowAll}>
+            Browse All Words
+          </SmallGhostButton>
+          <SmallSortPill value={sort} onChange={setSort} />
           {letterCount > 0 && (
-            <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+            <SmallGhostButton onClick={onEmptyCup} aria-label="Empty the cup">
               Empty Cup
-            </GhostButton>
+            </SmallGhostButton>
           )}
         </div>
       </div>
@@ -337,20 +339,23 @@ function HeroView({
         </div>
       </div>
 
-      {/* Bottom zone: SINGLE row of controls.
-          shrink-0, always at the same y position. Next Word lives
-          inline with the secondary controls so the entire row fits in
-          one band. Next Word stays visually most prominent via the
-          filled (bg-ink text-paper) treatment vs the ghost outlines. */}
-      <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-3 sm:pt-3 sm:pb-3.5 flex flex-col items-center border-t border-ink/15">
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
-          <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
-          <GhostButton onClick={onShowAll}>Browse All Words</GhostButton>
-          <SortPill value={sort} onChange={setSort} />
+      {/* Bottom zone: TWO-ROW control bar.
+          Row 1 — primary CTA ("Next Word") centered and prominent.
+          Row 2 — secondary actions at smaller size so they always fit
+          on one line regardless of viewport width. Separating primary
+          from secondary makes the hierarchy scannable at a glance and
+          prevents the row from wrapping on narrow screens. */}
+      <div className="shrink-0 px-3 sm:px-4 pt-2.5 pb-2 sm:pt-3 sm:pb-2.5 flex flex-col items-center gap-2 border-t border-ink/15">
+        <PrimaryButton onClick={onNext}>Next Word →</PrimaryButton>
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+          <SmallGhostButton onClick={onShowAll}>
+            Browse All Words
+          </SmallGhostButton>
+          <SmallSortPill value={sort} onChange={setSort} />
           {letterCount > 0 && (
-            <GhostButton onClick={onEmptyCup} aria-label="Empty the cup">
+            <SmallGhostButton onClick={onEmptyCup} aria-label="Empty the cup">
               Empty Cup
-            </GhostButton>
+            </SmallGhostButton>
           )}
         </div>
       </div>
@@ -547,6 +552,63 @@ function GhostButton({
     >
       {children}
     </button>
+  );
+}
+
+function SmallGhostButton({
+  children,
+  onClick,
+  ...rest
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-[10px] sm:text-[11px] font-semibold text-ink px-2.5 sm:px-3 py-1.5 bg-paper border border-ink/40 hover:bg-ink/10 hover:border-ink/60 rounded-md transition-colors whitespace-nowrap"
+      {...rest}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SmallSortPill({
+  value,
+  onChange,
+}: {
+  value: SortMode;
+  onChange: (m: SortMode) => void;
+}) {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value as SortMode)}
+        className="appearance-none text-[10px] sm:text-[11px] font-semibold text-ink bg-paper border border-ink/40 hover:bg-ink/10 hover:border-ink/60 focus:bg-ink/10 focus:border-ink/60 rounded-md pl-2.5 sm:pl-3 pr-7 py-1.5 cursor-pointer focus:outline-none transition-colors whitespace-nowrap"
+        aria-label="Sort words"
+      >
+        {(Object.keys(SORT_LABELS) as SortMode[]).map((m) => (
+          <option key={m} value={m}>
+            Sort: {SORT_LABELS[m]}
+          </option>
+        ))}
+      </select>
+      <svg
+        aria-hidden="true"
+        className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3"
+        viewBox="0 0 12 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M3 4.5 L6 7.5 L9 4.5" />
+      </svg>
+    </div>
   );
 }
 
